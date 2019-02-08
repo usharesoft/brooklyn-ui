@@ -20,6 +20,7 @@ import angular from "angular";
 import ngAnimate from 'angular-animate';
 import ngResource from "angular-resource";
 import ngCookies from "angular-cookies";
+import gettext from "angular-gettext";
 import uiRouter from "angular-ui-router";
 import "angular-ui-router/release/stateEvents";
 import ngClipboard from "ngclipboard";
@@ -70,8 +71,9 @@ import bottomSheet from "brooklyn-ui-utils/bottom-sheet/bottom-sheet";
 import stackViewer from 'angular-java-stack-viewer';
 import {EntityFamily} from "./components/util/model/entity.model";
 import scriptTagDecorator from 'brooklyn-ui-utils/script-tag-non-overwrite/script-tag-non-overwrite';
+import translations from './translations.js';
 
-angular.module('app', [ngAnimate, ngResource, ngCookies, ngClipboard, uiRouter, 'ui.router.state.events', brCore,
+angular.module('app', [ngAnimate, ngResource, ngCookies, ngClipboard, gettext, uiRouter, 'ui.router.state.events', brCore,
     brServerStatus, brAutoFocus, brIconGenerator, brInterstitialSpinner, brooklynModuleLinks, brooklynUserManagement,
     brYamlEditor, brUtils, brSpecEditor, brooklynCatalogSaver, brooklynApi, bottomSheet, stackViewer, brDragndrop,
     customActionDirective, customConfigSuggestionDropdown, paletteApiProvider, paletteServiceProvider, blueprintLoaderApiProvider,
@@ -83,7 +85,13 @@ angular.module('app', [ngAnimate, ngResource, ngCookies, ngClipboard, uiRouter, 
     .config(['actionServiceProvider', actionConfig])
     .config(['paletteServiceProvider', paletteConfig])
     .run(['$rootScope', '$state', 'brSnackbar', errorHandler])
-    .run(['$http', httpConfig]);
+    .run(['$http', httpConfig])
+    .run(['gettextCatalog', '$cookies', function (gettextCatalog, $cookies) {
+        var language = $cookies.get('PORTAL_LOCALE');
+        if (language) {
+            gettextCatalog.setCurrentLanguage(language);
+        }
+    }]);
 
 function applicationConfig($urlRouterProvider, $stateProvider, $logProvider) {
     $logProvider.debugEnabled(false);
@@ -112,8 +120,13 @@ function composerOverridesProvider() {
     };
 }
 
+/* Hack in order to have the constant string in the template */
+function translate(gettextCatalog) {
+    gettextCatalog.getString('Deploy');
+}
+
 function actionConfig(actionServiceProvider) {
-    actionServiceProvider.addAction("deploy", {html: '<button class="btn btn-outline btn-success" ng-click="vm.deployApplication()" ng-disabled="vm.deploying">Deploy</button>'});
+    actionServiceProvider.addAction("deploy", {html: '<button class="btn btn-outline btn-success" ng-click="vm.deployApplication()" ng-disabled="vm.deploying" translate>Deploy</button>'});
     actionServiceProvider.addAction("add", {html: '<catalog-saver config="vm.saveToCatalogConfig"></catalog-saver>'});
 }
 

@@ -23,12 +23,12 @@
             <ul class="nav navbar-nav navbar-nav-mode">
                 <li ng-class="{'active': vm.isGraphicalMode()}">
                     <a ui-sref="main.graphical" ng-disabled="vm.parseError">
-                        <i class="fa fa-fw fa-object-group"></i> Graphical Designer
+                        <i class="fa fa-fw fa-object-group"></i> <span translate>Graphical Designer</span>
                     </a>
                 </li>
                 <li ng-class="{'active': !vm.isGraphicalMode()}">
                     <a ui-sref="main.yaml">
-                        <i class="fa fa-fw fa-pencil"></i> YAML Editor
+                        <i class="fa fa-fw fa-pencil"></i> <span translate>YAML Editor</span>
                     </a>
                 </li>
             </ul>
@@ -41,14 +41,14 @@
             <ul class="nav navbar-nav navbar-right navbar-nav-secondary-actions" ng-if="vm.isGraphicalMode()" >
                 <li class="dropdown" uib-dropdown>
                     <a href class="dropdown-toggle" uib-dropdown-toggle aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-fw fa-clone"></i> Layers <span class="caret"></span>
+                        <i class="fa fa-fw fa-clone"></i> <span translate>Layers</span> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu">
                         <li role="menuitem" class="layer"
                             ng-if="vm.isGraphicalMode()"
                             ng-repeat="layer in vm.layers track by layer.id"
                             ng-class="{'active': layer.active}">
-                            <a ng-click="layer.active = !layer.active"><i class="fa fa-fw fa-circle"></i> {{layer.label}}</a>
+                            <a ng-click="layer.active = !layer.active"><i class="fa fa-fw fa-circle"></i> {{layer.label | translate}}</a>
                         </li>
                     </ul>
                 </li>

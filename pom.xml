@@ -195,6 +195,13 @@
                             </configuration>
                         </execution>
                         <execution>
+                            <id>grunt build</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>grunt</goal>
+                            </goals>
+                        </execution>
+                        <execution>
                             <id>npm build</id>
                             <phase>generate-resources</phase>
                             <goals>

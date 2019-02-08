@@ -40,10 +40,10 @@
                         <i class="fa fa-cog"></i>
                     </button>
                 </span>
-                <input ng-model="search" type="text" placeholder="{{getPlaceHolder()}}" class="form-control" auto-focus />
+                <input ng-model="search" type="text" placeholder="{{'Search'|translate}}" class="form-control" auto-focus />
                 <span class="input-group-addon">
-                    <strong>{{searchedItems.length === 0 && search && allowFreeForm() ? 1 : searchedItems.length}}</strong>
-                    {{(searchedItems.length === 0 && search && allowFreeForm() ? 1 : searchedItems.length) == 1 ? 'item' : 'items'}}
+                    <span translate translate-n="searchedItems.length === 0 && search && allowFreeForm() ? 1 : searchedItems.length"
+                     translate-plural="<strong>{{$count}}</strong> items">{{$count}} item</span>
                 </span>
             </div>
             <div class="pane-nav-row" id="palette-controls" ng-if="showPaletteControls" aria-labelledby="palette-controls-button">

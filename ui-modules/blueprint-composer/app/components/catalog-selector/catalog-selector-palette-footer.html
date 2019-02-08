@@ -27,9 +27,9 @@
                     <strong>{{ itemsBeforeActiveFilters.length - itemsAfterActiveFilters.length }} 
                         <ng-pluralize count="itemsBeforeActiveFilters.length" when="{ '1': 'item', 'other': 'items' }"></<ng-pluralize></strong> 
                     matching search but excluded by filters. 
-                    <button class="btn btn-outline btn-info" ng-click="disableFilters()">Clear filters</button>
+                    <button class="btn btn-outline btn-info" ng-click="disableFilters()" translate>Clear filters</button>
             </span>
-            <span ng-if="skippingFilters || itemsBeforeActiveFilters.length === 0">
+            <span ng-if="skippingFilters || itemsBeforeActiveFilters.length === 0" translate>
                     No matches for <code>{{ search }}</code>.
             </span>
           </span>
@@ -39,7 +39,7 @@
                     Showing matches ignoring filters.
             </span>
             <span ng-if="!skippingFilters && itemsBeforeActiveFilters.length > itemsAfterActiveFilters.length">
-                    <strong>{{ itemsBeforeActiveFilters.length - itemsAfterActiveFilters.length }} more 
+                    <strong>{{ itemsBeforeActiveFilters.length - itemsAfterActiveFilters.length }} more
                         <ng-pluralize count="itemsBeforeActiveFilters.length" when="{ '1': 'item', 'other': 'items' }"></<ng-pluralize></strong> 
                     matching search but excluded by filters.
                     <button class="btn btn-outline btn-info" ng-click="disableFilters()">Clear filters</button>

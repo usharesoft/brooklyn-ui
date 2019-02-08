@@ -129,6 +129,8 @@
                 <configuration>
                     <excludes combine.children="append">
                         <exclude>**/test/fixtures/brooklyn-api/v1/**</exclude>
+                        <exclude>app/translations.js</exclude>
+                        <exclude>po/template.pot</exclude>
                     </excludes>
                 </configuration>
             </plugin>

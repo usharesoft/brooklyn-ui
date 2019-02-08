@@ -1,0 +1,93 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.9\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: app/components/catalog-saver/catalog-saver.directive.js:72
+msgid "Add to catalog"
+msgstr "Ajouter au catalogue"
+
+#: app/views/main/main.controller.js:61
+msgid "Adjuncts"
+msgstr "Auxiliaires"
+
+#: app/components/catalog-saver/catalog-saver.modal.template.html:36
+msgid "Blueprint description"
+msgstr "Description du blueprint"
+
+#: app/components/catalog-selector/catalog-selector-palette-footer.html:30
+msgid "Clear filters"
+msgstr "Réinitialiser"
+
+#: app/index.js:125
+msgid "Deploy"
+msgstr "Déployer"
+
+#: app/views/main/main.template.html:26
+msgid "Graphical Designer"
+msgstr "Editeur Graphique"
+
+#: app/views/main/main.template.html:44
+msgid "Layers"
+msgstr "Calques"
+
+#: app/views/main/main.controller.js:60
+msgid "Locations"
+msgstr "Localisation"
+
+#: app/views/main/main.controller.js:62
+msgid "Member specs"
+msgstr "Lien de spec"
+
+#: app/components/catalog-selector/catalog-selector-palette-footer.html:32
+msgid "No matches for <code>{{ search }}</code>."
+msgstr "Pas de résultat pour <code>{{ search }}</code>."
+
+#: app/views/main/main.controller.js:63
+msgid "Relationships"
+msgstr "Relations"
+
+#: app/components/catalog-selector/catalog-selector.template.html:43
+msgid "Search"
+msgstr "Rechercher"
+
+#: app/views/main/main.template.html:31
+msgid "YAML Editor"
+msgstr "Editeur YAML"
+
+#: app/components/catalog-selector/catalog-selector.template.html:45
+msgid "{{$count}} item"
+msgid_plural "<strong>{{$count}}</strong> items"
+msgstr[0] "{{$count}} élément"
+msgstr[1] "<strong>{{$count}}</strong> éléments"
+
+#~ msgid "item"
+#~ msgid_plural "items"
+#~ msgstr[0] "élément"
+#~ msgstr[1] "éléments"

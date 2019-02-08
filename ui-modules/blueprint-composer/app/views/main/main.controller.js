@@ -56,6 +56,13 @@ const layers = [
 ];
 const layerCacheKey = 'blueprint-composer.layers';
 
+function doTranslation(gettextCatalog) {
+    gettextCatalog.getString('Locations');
+    gettextCatalog.getString('Adjuncts');
+    gettextCatalog.getString('Member specs');
+    gettextCatalog.getString('Relationships');
+}
+
 export function MainController($scope, $element, $log, $state, $stateParams, brBrandInfo, blueprintService, actionService, catalogApi, applicationApi, brSnackbar, brBottomSheet, edit, yaml, composerOverrides) {
     $scope.$emit(HIDE_INTERSTITIAL_SPINNER_EVENT);
     let vm = this;

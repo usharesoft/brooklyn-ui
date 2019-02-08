@@ -42,7 +42,7 @@ const TYPES = [
 ];
 
 angular.module(MODULE_NAME, [angularAnimate, uibModal, brUtils])
-    .directive('catalogSaver', ['$rootScope', '$uibModal', '$injector', '$filter', 'composerOverrides', 'blueprintService', saveToCatalogModalDirective])
+    .directive('catalogSaver', ['$rootScope', '$uibModal', '$injector', '$filter', 'composerOverrides', 'blueprintService', 'gettextCatalog', saveToCatalogModalDirective])
     .directive('catalogVersion', ['$parse', catalogVersionDirective])
     .directive('composerBlueprintNameValidator', composerBlueprintNameValidatorDirective)
     .filter('bundlize', bundlizeProvider)
@@ -50,7 +50,7 @@ angular.module(MODULE_NAME, [angularAnimate, uibModal, brUtils])
 
 export default MODULE_NAME;
 
-export function saveToCatalogModalDirective($rootScope, $uibModal, $injector, $filter, composerOverrides, blueprintService) {
+export function saveToCatalogModalDirective($rootScope, $uibModal, $injector, $filter, composerOverrides, blueprintService, gettextCatalog) {
     return {
         restrict: 'E',
         templateUrl: function (tElement, tAttrs) {
@@ -69,7 +69,7 @@ export function saveToCatalogModalDirective($rootScope, $uibModal, $injector, $f
         }
         $scope.isNewFromTemplate = () => ($scope.config.itemType !== 'template' && $scope.config.original.itemType === 'template');
         $scope.isUpdate = () => !$scope.isNewFromTemplate() && Object.keys($scope.config.original).length>0;
-        $scope.buttonTextFn = () => $scope.config.label || ($scope.isUpdate() && ($scope.config.name || $scope.config.original.name || $scope.config.symbolicName || $scope.config.original.symbolicName)) || 'Add to catalog';
+        $scope.buttonTextFn = () => $scope.config.label || ($scope.isUpdate() && ($scope.config.name || $scope.config.original.name || $scope.config.symbolicName || $scope.config.original.symbolicName)) || gettextCatalog.getString('Add to catalog');
         $scope.buttonText = $scope.buttonTextFn(); 
         
         $scope.activateModal = () => {
