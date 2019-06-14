@@ -57,6 +57,7 @@ import recentlyUsedService from "./components/providers/recently-used-service.pr
 import dslService from "./components/providers/dsl-service.provider";
 import paletteDragAndDropService from "./components/providers/palette-dragndrop.provider";
 import actionService from "./components/providers/action-service.provider";
+import sensorsList from "./components/sensors-list/sensors-list.directive";
 import {mainState} from "./views/main/main.controller";
 import {yamlState} from "./views/main/yaml/yaml.state";
 import {graphicalState} from "./views/main/graphical/graphical.state";
@@ -65,6 +66,7 @@ import {graphicalEditAddState} from "./views/main/graphical/edit/add/add";
 import {graphicalEditEntityState} from "./views/main/graphical/edit/entity/edit.entity.controller";
 import {graphicalEditPolicyState} from "./views/main/graphical/edit/policy/edit.policy.controller";
 import {graphicalEditEnricherState} from "./views/main/graphical/edit/enricher/edit.enricher.controller";
+import {graphicalEditSensorsState} from "./views/main/graphical/edit/sensors/edit.sensors.controller";
 import {graphicalEditSpecState} from "./views/main/graphical/edit/spec/edit.spec.controller";
 import {graphicalEditDslState, dslParamLabelFilter} from "./views/main/graphical/edit/dsl/edit.dsl.controller";
 import bottomSheet from "brooklyn-ui-utils/bottom-sheet/bottom-sheet";
@@ -76,8 +78,8 @@ angular.module('app', [ngAnimate, ngResource, ngCookies, ngClipboard, uiRouter, 
     brServerStatus, brAutoFocus, brIconGenerator, brInterstitialSpinner, brooklynModuleLinks, brooklynUserManagement,
     brYamlEditor, brUtils, brSpecEditor, brooklynCatalogSaver, brooklynApi, bottomSheet, stackViewer, brDragndrop,
     customActionDirective, customConfigSuggestionDropdown, paletteApiProvider, paletteServiceProvider, blueprintLoaderApiProvider,
-    breadcrumbs, catalogSelector, notReadyAppliance, designer, objectCache, entityFilters, locationFilter, actionService, blueprintService,
-    dslService, paletteDragAndDropService, recentlyUsedService, scriptTagDecorator])
+    breadcrumbs, catalogSelector, notReadyAppliance, designer, objectCache, entityFilters, locationFilter, actionService,
+    sensorsList, blueprintService, dslService, paletteDragAndDropService, recentlyUsedService, scriptTagDecorator])
     .provider('composerOverrides', composerOverridesProvider)
     .filter('dslParamLabel', ['$filter', dslParamLabelFilter])
     .config(['$urlRouterProvider', '$stateProvider', '$logProvider', applicationConfig])
@@ -99,6 +101,7 @@ function applicationConfig($urlRouterProvider, $stateProvider, $logProvider) {
         .state(graphicalEditEntityState)
         .state(graphicalEditPolicyState)
         .state(graphicalEditEnricherState)
+        .state(graphicalEditSensorsState)
         .state(graphicalEditSpecState)
         .state(graphicalEditDslState);
 }

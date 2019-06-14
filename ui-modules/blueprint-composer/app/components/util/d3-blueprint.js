@@ -79,14 +79,35 @@ export function D3Blueprint(container, $scope) {
                     opacity: 0
                 }
             },
-        warning: {
-            image: {
-                class: 'node-warning',
-                width: 24,
-                height: 24,
-                x: -65,
-                y: 15,
-                'xlink:href': warningIcon
+            sensors: {
+                circle: {
+                    r: 17,
+                    cx: -56,
+                    cy: -38,
+                    class: 'node-sensors-circle',
+                },
+                icon: {
+                    text: {
+                        x: -56,
+                        y: -38,
+                        'font-family': 'FontAwesome',
+                        'font-size': '25px',
+                        'text-anchor': 'middle',
+                        'dominant-baseline': 'central',
+                        'stroke-width': '0px',
+                        fill: 'black',
+                        class: 'sensors-icon'
+                    }
+                },
+            },
+            warning: {
+                image: {
+                    class: 'node-warning',
+                    width: 24,
+                    height: 24,
+                    x: -65,
+                    y: 15,
+                    'xlink:href': warningIcon
                 }
             },
             location: {
@@ -292,6 +313,17 @@ export function D3Blueprint(container, $scope) {
         });
         container.dispatchEvent(event);
         $scope.$root.$broadcast("click-entity");
+    }
+
+    function sensorsFunctionClick(node) {
+        if (d3.event.defaultPrevented) return;
+        d3.event.stopPropagation();
+        let event = new CustomEvent('click-sensors', {
+            detail: {
+                entity: node.data || node,
+            },
+        });
+        container.dispatchEvent(event);
     }
 
     function warningFunctionClick(node) {
@@ -674,6 +706,15 @@ export function D3Blueprint(container, $scope) {
         appendElement(entity.filter(isChildNode).selectAll('circle').data([2, 1, 0]).enter(), 'circle', _configHolder.nodes.child.circle);
         appendElement(entity.filter(isChildNode), 'image', _configHolder.nodes.child.image); //removing this line removes the image
 
+        // Draw sensors
+        let sensors = nodeGroup.filter(isChildNode).append('g')
+            .attr('class', 'node-sensors')
+            .attr('id', (d)=>(`sensors-${d.data._id}`))
+        nodeData.select('g.node-sensors').on('click', sensorsFunctionClick)
+        appendElements(sensors, _configHolder.nodes.sensors)
+        nodeData.select('text.sensors-icon').html('\uf2c9')
+        appendElements(sensors, _configHolder.nodes.sensors.icon)
+
         // Draw warning
         let warning = nodeGroup.append('g')
             .attr('class', 'node-warning')
@@ -1048,17 +1089,23 @@ export function D3Blueprint(container, $scope) {
     }
 
     function selectNode(id) {
-        _svg.selectAll('.entity.selected').classed('selected', false);
-        _svg.selectAll('.relation.highlight').classed('highlight', false);
+        unselectNode();
         _svg.select(`#entity-${id}`).classed('selected', true);
         _svg.selectAll(`.relation[from='${id}']`).classed('highlight', true);
         _svg.selectAll(`.relation[to='${id}']`).classed('highlight', true);
         return this;
     }
 
+    function selectSensors(id) {
+        unselectNode();
+        _svg.select(`#sensors-${id}`).classed('selected', true);
+        return this;
+    }
+
     function unselectNode() {
         _svg.selectAll('.entity.selected').classed('selected', false);
         _svg.selectAll('.relation.highlight').classed('highlight', false);
+        _svg.selectAll('.node-sensors.selected').classed('selected', false);
         return this;
     }
 
@@ -1110,6 +1157,7 @@ export function D3Blueprint(container, $scope) {
         update: update,
         center: center,
         select: selectNode,
+        selectSensors: selectSensors,
         unselect: unselectNode
     };
 }
