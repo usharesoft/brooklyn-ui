@@ -31,6 +31,9 @@ const TEMPLATE_URL = 'blueprint-composer/component/designer/index.html';
 const ANY_MEMBERSPEC_REGEX = /(^.*[m,M]ember[s,S]pec$)/;
 const TAG = 'DIRECTIVE :: DESIGNER :: ';
 
+const ENTITY_CORE = 'ENTITY_CORE';
+const SENSORS_SATELLITE = 'SENSORS_SATELLITE';
+
 angular.module(MODULE_NAME, [])
     .directive('designer', ['$log', '$state', '$q', 'iconGenerator', 'catalogApi', 'blueprintService', 'brSnackbar', 'paletteDragAndDropService', designerDirective])
     .run(['$templateCache', templateCache]);
@@ -62,7 +65,7 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
         });
 
         $scope.selectedEntity = null;
-        $scope.selectedEntityDecorator = null;
+        $scope.selectedNodePart = null;
 
         $scope.$on('d3.redraw', (event, initial)=> {
             $log.debug(TAG + 'Re-draw blueprint, triggered by ' + event.name, $scope.blueprint);
@@ -114,23 +117,23 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
             switch(toState) {
                 case graphicalEditEntityState:
                     id = toParams.entityId;
-                    $scope.selectedEntityDecorator = null;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
                 case graphicalEditSensorsState:
                     id = toParams.entityId;
-                    $scope.selectedEntityDecorator = 'sensors';
+                    $scope.selectedNodePart = SENSORS_SATELLITE;
                     break;
                 case graphicalEditSpecState:
                     id = toParams.specId;
-                    $scope.selectedEntityDecorator = null;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
                 case graphicalEditPolicyState:
                     id = toParams.policyId;
-                    $scope.selectedEntityDecorator = null;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
                 case graphicalEditEnricherState:
                     id = toParams.enricherId;
-                    $scope.selectedEntityDecorator = null;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
             }
             if (angular.isDefined(id)) {
@@ -268,8 +271,8 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
 
             blueprintGraph.update($scope.blueprint, crossLinks).draw();
             if ($scope.selectedEntity) {
-                switch($scope.selectedEntityDecorator) {
-                    case 'sensors':
+                switch($scope.selectedNodePart) {
+                    case SENSORS_SATELLITE:
                         blueprintGraph.selectSensors($scope.selectedEntity._id);
                         break;
                     default:
