@@ -52,6 +52,7 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
 
     function link($scope, $element) {
         $scope.type = $scope.type || 'brooklyn';
+        $scope.CODE_FOLDER_STORAGE_NAME = $scope.CODE_FOLDER_STORAGE_NAME || 'blueprint-composer.code-folder';
 
         // Init CodeMirror
         CodeMirror.extendMode('yaml', {
@@ -149,6 +150,155 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
                 widget: '{ ... }'
             }
         });
+
+        function getDataFromLocalStorage(){
+            if ($scope.CODE_FOLDER_STORAGE_NAME) {
+                return JSON.parse(localStorage.getItem($scope.CODE_FOLDER_STORAGE_NAME))
+            } else {
+                return null;
+            }
+        }
+
+        function setDataToLocalStorage(data){
+            if ($scope.CODE_FOLDER_STORAGE_NAME) {
+                localStorage.setItem($scope.CODE_FOLDER_STORAGE_NAME, JSON.stringify(data));
+            }
+        }
+
+        /*
+        * Extract key from yaml text, ignore list marker
+        */
+        function extractKey(textLine) {
+            let line = textLine.split(':')[0].trim();
+            if (line[0] == '-') {
+                line = line.substr(1).trim();
+            }
+            return line;
+        }
+
+        function isList(textLine) {
+            return textLine.text.trim()[0] == '-';
+        }
+
+        function getLineIndent(line) {
+            if (line.handle) {
+                return line.handle.stateAfter.keyCol;
+            } else {
+                return line.stateAfter.keyCol;
+            }
+        }
+
+        /*
+        * Private recursion function for findLineNumberToFold
+        */
+        function findLineNumberToFoldStep(currentLine, foldBlock, indexFoldBlock) {
+            if (indexFoldBlock+1 == foldBlock.length) {
+                return currentLine;
+            } else {
+                return findLineNumberToFold(currentLine+1, $scope.cm.lineInfo(currentLine).handle.stateAfter.keyCol, foldBlock, indexFoldBlock+1);
+            }
+        }
+        
+        /*
+        * Get lineNumber from list of key
+        * Recursive function: search line with key describe in foldBlock (the first element)
+        * If we find, call this function with next element of foldBlock
+        * @startLine: line of begining block to find key
+        * @indentLvlMinimal: the minimal indent level of the block
+        * @foldBlock: hierarchy of key to find
+        * @indexFoldBlock: index in foldBlock
+        */
+        function findLineNumberToFold(startLine, indentLvlMinimal, foldBlock, indexFoldBlock) {
+            let entryInList = -1;
+            let i = startLine;
+            while (i < $scope.cm.lineCount() && getLineIndent($scope.cm.lineInfo(i)) > indentLvlMinimal) {
+                if (Number.isInteger(foldBlock[indexFoldBlock])) {
+                    if (isList($scope.cm.lineInfo(i))) {
+                        entryInList++;
+                    }
+                    if (entryInList == foldBlock[indexFoldBlock]) {
+                        return findLineNumberToFoldStep(i, foldBlock, indexFoldBlock);
+                    }
+                } else {
+                    if (extractKey($scope.cm.lineInfo(i).text) == extractKey(foldBlock[indexFoldBlock])) {
+                        return findLineNumberToFoldStep(i, foldBlock, indexFoldBlock);
+                    }
+                }
+                i++;
+            }
+            return -1;
+        }
+
+        function fold(foldBlock) {
+            let line = findLineNumberToFold(0, -1, foldBlock, 0);
+            if (line != -1) {
+                $scope.cm.foldCode(line, {}, 'fold');
+            }
+        }
+
+        function foldAll(foldArray) {
+            if (foldArray) {
+                foldArray.forEach((value) => fold(value));
+            }
+        }
+
+        /*
+        * Create the list of parent keys from specific line
+        * Recursive function
+        */
+        function findParents(line, lineNumber) {
+            let currentIndent = getLineIndent(line);
+            if (currentIndent > 0) {
+                let i = lineNumber;
+                let indexArray = -1;
+                while (currentIndent <= getLineIndent(line.parent.lines[i])) {
+                    if (currentIndent == getLineIndent(line.parent.lines[i]) && isList(line.parent.lines[i])) {
+                        indexArray++;   
+                    }
+                    i--;
+                }
+                let current;
+                if (isList(line)) {
+                    current = indexArray;
+                } else {
+                    current = extractKey(line.text);
+                }
+                let parents = findParents(line.parent.lines[i], i);
+                parents.push(current);
+                return parents;
+            } else {
+                return [extractKey(line.text)];
+            }
+        }
+
+        /*
+        * Find all folded block
+        * Warning : Based, on part, on css class 'CodeMirror-foldgutter-folded'
+        */
+        function findFold() {
+            let value = [];
+            let i = 0;
+            while (i < $scope.cm.lineCount()) {
+                let line = $scope.cm.lineInfo(i);
+                if ($scope.cm.isFolded(line) && line.gutterMarkers && line.gutterMarkers['CodeMirror-foldgutter'] 
+                    && line.gutterMarkers['CodeMirror-foldgutter'].classList.contains('CodeMirror-foldgutter-folded')) {
+                    let parents = findParents(line.handle.parent.lines[i], i);
+                    value.push(parents);
+                }
+                i++;
+            }
+            return value;
+        }
+
+        function onFoldChanged() {
+            setDataToLocalStorage(findFold());
+        }
+
+        foldAll(getDataFromLocalStorage());
+        $scope.cm.on('fold', onFoldChanged);
+        $scope.cm.on('unfold', onFoldChanged);
+
+
         $scope.cm.on('changes', (cm, change)=> {
             if ($scope.value !== cm.getValue()) {
                 $scope.$apply(()=> {
