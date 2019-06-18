@@ -1,0 +1,42 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<div class="panel-title">{{panelTitle}}</div>
+
+<div class="sensor-widget" ng-repeat="sensor in sensors">
+        <span class="sensor-name">{{sensor.name}}</span>
+        <span class="sensor-info">
+            <i class="fa fa-fw fa-info-circle" popover-trigger="'mouseenter'"
+               popover-title="{{sensor.name}}"
+               uib-popover-template="'blueprint-composer/component/sensors-list/sensor-info.html'"
+               popover-class="spec-editor-popover" popover-placement="top-right" popover-append-to-body="true"></i>
+        </span>
+</div>
+
+<!-- CONFIG INFO TEMPLATE :: START -->
+<script type="text/ng-template" id="blueprint-composer/component/sensors-list/sensor-info.html" defer-to-preexisting-id="true">
+    <div class="config-item-quick-info">
+        <div class="quick-info-metadata">
+            <p><i class="mini-icon fa fa-fw fa-cog"></i> <samp class="type-symbolic-name">{{sensor.name}}</samp>
+                <span class="config-type label-color column-for-type oneline label label-success">{{sensor.type}}</span></p>
+        </div>
+        <p class="quick-info-description" ng-if="sensor.description">{{sensor.description}}</p>
+    </div>
+
+</script>
+<!-- CONFIG INFO TEMPLATE :: START-->
