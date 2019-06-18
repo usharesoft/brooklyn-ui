@@ -24,11 +24,15 @@ import {graphicalEditEntityState} from '../../views/main/graphical/edit/entity/e
 import {graphicalEditSpecState} from '../../views/main/graphical/edit/spec/edit.spec.controller';
 import {graphicalEditPolicyState} from '../../views/main/graphical/edit/policy/edit.policy.controller';
 import {graphicalEditEnricherState} from '../../views/main/graphical/edit/enricher/edit.enricher.controller';
+import {graphicalEditSensorsState} from '../../views/main/graphical/edit/sensors/edit.sensors.controller';
 
 const MODULE_NAME = 'brooklyn.components.designer';
 const TEMPLATE_URL = 'blueprint-composer/component/designer/index.html';
 const ANY_MEMBERSPEC_REGEX = /(^.*[m,M]ember[s,S]pec$)/;
 const TAG = 'DIRECTIVE :: DESIGNER :: ';
+
+const ENTITY_CORE = 'ENTITY_CORE';
+const SENSORS_SATELLITE = 'SENSORS_SATELLITE';
 
 angular.module(MODULE_NAME, [])
     .directive('designer', ['$log', '$state', '$q', 'iconGenerator', 'catalogApi', 'blueprintService', 'brSnackbar', 'paletteDragAndDropService', designerDirective])
@@ -61,6 +65,7 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
         });
 
         $scope.selectedEntity = null;
+        $scope.selectedNodePart = null;
 
         $scope.$on('d3.redraw', (event, initial)=> {
             $log.debug(TAG + 'Re-draw blueprint, triggered by ' + event.name, $scope.blueprint);
@@ -112,15 +117,23 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
             switch(toState) {
                 case graphicalEditEntityState:
                     id = toParams.entityId;
+                    $scope.selectedNodePart = ENTITY_CORE;
+                    break;
+                case graphicalEditSensorsState:
+                    id = toParams.entityId;
+                    $scope.selectedNodePart = SENSORS_SATELLITE;
                     break;
                 case graphicalEditSpecState:
                     id = toParams.specId;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
                 case graphicalEditPolicyState:
                     id = toParams.policyId;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
                 case graphicalEditEnricherState:
                     id = toParams.enricherId;
+                    $scope.selectedNodePart = ENTITY_CORE;
                     break;
             }
             if (angular.isDefined(id)) {
@@ -128,6 +141,9 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
                 $scope.selectedEntity = blueprintService.findAny(id);
                 if ($scope.onSelectionChange) $scope.onSelectionChange($scope.selectedEntity);
             }
+            $scope.$applyAsync(()=> {
+                redrawGraph();
+            });
         });
 
         $element.bind('click-svg', (event)=> {
@@ -157,6 +173,13 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
                         $state.go(graphicalEditEnricherState, {entityId: event.detail.entity.parent._id, enricherId: event.detail.entity._id});
                         break;
                 }
+            });
+        });
+
+        $element.bind('click-sensors', (event)=> {
+            $scope.$apply(()=>{
+                $log.debug(TAG + 'edit sensors of node ' + event.detail.entity._id, event.detail.entity);
+                $state.go(graphicalEditSensorsState, { entityId: event.detail.entity._id });
             });
         });
 
@@ -248,7 +271,13 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
 
             blueprintGraph.update($scope.blueprint, crossLinks).draw();
             if ($scope.selectedEntity) {
-                blueprintGraph.select($scope.selectedEntity._id);
+                switch($scope.selectedNodePart) {
+                    case SENSORS_SATELLITE:
+                        blueprintGraph.selectSensors($scope.selectedEntity._id);
+                        break;
+                    default:
+                        blueprintGraph.select($scope.selectedEntity._id);
+                }
             } else {
                 blueprintGraph.unselect();
             }
