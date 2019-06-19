@@ -39,7 +39,8 @@ export const EntityFamily = {
     LOCATION: {id: 'LOCATION', displayName: 'Location', superType: 'org.apache.brooklyn.api.location'},
     POLICY: {id: 'POLICY', displayName: 'Policy', superType: 'org.apache.brooklyn.api.policy.Policy'},
     ENRICHER: {id: 'ENRICHER', displayName: 'Enricher', superType: 'org.apache.brooklyn.api.sensor.Enricher'},
-    SPEC: {id: 'SPEC', displayName: 'Spec', superType: 'org.apache.brooklyn.api.entity.EntitySpec'}
+    SPEC: {id: 'SPEC', displayName: 'Spec', superType: 'org.apache.brooklyn.api.entity.EntitySpec'},
+    SENSORS: {id: 'SENSORS', displayName: 'Sensors', superType: 'org.apache.brooklyn.core.effector.AddSensor'},
 };
 
 export const PREDICATE_MEMBERSPEC = (config, entity)=>(config.name.match(MEMBERSPEC_REGEX));

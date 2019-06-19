@@ -58,6 +58,11 @@ export class PaletteApi {
         return Promise.resolve();
     }
 
+    getSensors() {
+        // no-op
+        return Promise.resolve();
+    }
+
     create(bom, params) {
         // no-op
         return Promise.resolve();
