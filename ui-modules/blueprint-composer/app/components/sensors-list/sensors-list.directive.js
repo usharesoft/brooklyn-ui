@@ -35,8 +35,26 @@ export function sensorsListDirective() {
             return tAttrs.templateUrl || TEMPLATE_URL;
         },
         scope: {
-            sensors: '=sensors',
-            panelTitle: '@panelTitle'
+            sensors: '=sensors'
+        },
+        link: function($scope) {
+            $scope.sensors = $scope.sensors.sort((a, b) => {
+                if (a.name) {
+                    return a.name.localeCompare(b.name);
+                } else {
+                    return 1;
+                }
+            });
+            $scope.constainsGenericSensor = function() {
+                return $scope.sensors.find((sensor) => {
+                    return !sensor.sensorType;
+                }) != null;
+            };
+            $scope.constainsSpecificSensor = function() {
+                return $scope.sensors.find((sensor) => {
+                    return sensor.sensorType;
+                }) != null;
+            };
         }
     };
 }

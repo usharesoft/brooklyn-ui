@@ -16,9 +16,21 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<div class="panel-title">{{panelTitle}}</div>
+<div class="title-separator" ng-if="constainsSpecificSensor()">Specific sensor</div>
 
-<div class="sensor-widget" ng-repeat="sensor in sensors">
+<div class="sensor-widget" ng-repeat="sensor in sensors" ng-if="sensor.sensorType">
+        <span class="sensor-name">{{sensor.name}}</span>
+        <span class="sensor-info">
+            <i class="fa fa-fw fa-info-circle" popover-trigger="'mouseenter'"
+               popover-title="{{sensor.name}}"
+               uib-popover-template="'blueprint-composer/component/sensors-list/sensor-yaml-info.html'"
+               popover-class="spec-editor-popover" popover-placement="bottom-left" popover-append-to-body="true"></i>
+        </span>
+</div>
+
+<div class="title-separator" ng-if="constainsGenericSensor()">Generic sensor</div>
+
+<div class="sensor-widget" ng-repeat="sensor in sensors" ng-if="!sensor.sensorType">
         <span class="sensor-name">{{sensor.name}}</span>
         <span class="sensor-info">
             <i class="fa fa-fw fa-info-circle" popover-trigger="'mouseenter'"
@@ -36,6 +48,22 @@
                 <span class="config-type label-color column-for-type oneline label label-success">{{sensor.type}}</span></p>
         </div>
         <p class="quick-info-description" ng-if="sensor.description">{{sensor.description}}</p>
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="blueprint-composer/component/sensors-list/sensor-yaml-info.html" defer-to-preexisting-id="true">
+    <div class="config-item-quick-info">
+        <div class="quick-info-metadata">
+            <p><i class="mini-icon fa fa-fw fa-cog"></i> <samp class="type-symbolic-name">{{sensor.name}}</samp>
+                <span class="config-type label-color column-for-type oneline label label-success">{{sensor.sensorType}}</span></p>
+        </div>
+        <p class="quick-info-description sensor-yaml-description" ng-if="sensor.description">{{sensor.description}}</p>
+        <div class="quick-info-description">
+            <div>Return type: {{sensor.type}}</div>
+            <div>Period: {{sensor.period}}</div>
+            <div>Command: {{sensor.command}}</div>
+        </div>
     </div>
 
 </script>
