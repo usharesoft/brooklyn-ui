@@ -243,11 +243,38 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
                 : paletteApi.getType(entity.type, entity.version, entity.config);
 
             promise.then((data)=> {
-                let sensors = getSensorsFromYaml(entity);
-                sensors.forEach((specificSensor) => {
-                    let sensor = specificSensor['brooklyn.config'];
-                    sensor.type = specificSensor['brooklyn.config'].targetType;
-                    sensor.sensorType = specificSensor.type;
+                getSensorsFromYaml(entity).forEach((specificSensor) => {
+                    const sensor = {
+                        sensorType: specificSensor.type,
+                        template: specificSensor,
+                        updateMetainfo: function() {
+                            this.name = this.template['brooklyn.config'].name;
+                            this.type = this.template['brooklyn.config'].targetType;
+                            this.description = this.template['brooklyn.config'].description;
+                        },
+                        deleteSensor: function() {
+                            let i = 0;
+                            const initializers = entity.metadata.get('brooklyn.initializers');
+                            while (i < initializers.length && initializers[i] != this.template) {
+                                i++;
+                            }
+                            if (i < initializers.length) {
+                                initializers.splice(i, 1);
+                                if (initializers.length == 0) {
+                                    entity.metadata.delete('brooklyn.initializers');
+                                }
+                            }
+
+                            i = 0;
+                            while (i < data.sensors.length && data.sensors[i] != this) {
+                                i++;
+                            }
+                            if (i < data.sensors.length) {
+                                data.sensors.splice(i, 1);
+                            }
+                        }
+                    }
+                    sensor.updateMetainfo();
                     data.sensors.push(sensor);
                 });
                 deferred.resolve(populateEntityFromApiSuccess(entity, data));
@@ -272,7 +299,7 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
 
     function getSensorsFromYaml(entity) {
         let sensors = [];
-        let initializers = entity.getData()['brooklyn.initializers'];
+        let initializers = entity.metadata.get('brooklyn.initializers');
         if (initializers) {
             initializers.forEach((initializer) => {
                 if (initializer.type == "org.apache.brooklyn.core.sensor.ssh.SshCommandSensor") {

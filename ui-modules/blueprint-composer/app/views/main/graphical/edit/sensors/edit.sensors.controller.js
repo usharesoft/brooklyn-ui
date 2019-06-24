@@ -19,7 +19,18 @@
 import template from './edit.sensors.template.html';
 
 export function EditSensorsController($scope, entity) {
-    $scope.catalogSensors = entity.miscData.get('sensors');
+    $scope.genericSensors = [];
+    $scope.specificSensors = [];
+    entity.miscData.get('sensors')
+        .forEach(sensor => {
+            if (sensor.template) {
+                $scope.specificSensors.push(sensor);
+            } else {
+                $scope.genericSensors.push(sensor);
+            }
+        });
+    sortSensors($scope.genericSensors);
+    sortSensors($scope.specificSensors);
 }
 
 export const graphicalEditSensorsState = {
@@ -29,3 +40,13 @@ export const graphicalEditSensorsState = {
     controller: ['$scope', 'entity', EditSensorsController],
     controllerAs: 'vm',
 };
+
+function sortSensors(sensors) {
+    sensors.sort((a, b) => {
+        if (a.name) {
+            return a.name.localeCompare(b.name);
+        } else {
+            return 1;
+        }
+    });
+}
