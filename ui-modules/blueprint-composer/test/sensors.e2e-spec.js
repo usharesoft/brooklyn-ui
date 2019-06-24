@@ -38,7 +38,6 @@ describe('Sensors', ()=> {
             });
         });
     });
-
     it('should display the list of sensors for an appliance', () => {
         debugger;
         element(by.css('.list-group a[title="Entities catalog"]')).click();
