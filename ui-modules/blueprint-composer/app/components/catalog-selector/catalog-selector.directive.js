@@ -176,6 +176,9 @@ export function catalogSelectorDirective() {
                 case EntityFamily.LOCATION:
                     defer = paletteApi.getLocations();
                     break;
+                case EntityFamily.SENSORS:
+                    defer = paletteApi.getSensors();
+                    break;
             }
 
             return defer.then(data => {
