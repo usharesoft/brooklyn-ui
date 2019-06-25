@@ -127,6 +127,11 @@ function paletteConfig(paletteServiceProvider) {
         type: EntityFamily.ENTITY,
         icon: 'fa-square-o'
     });
+    paletteServiceProvider.addSection('sensors', {
+        title: 'Sensors',
+        type: EntityFamily.SENSORS,
+        icon: 'fa-thermometer-half'
+    });
     paletteServiceProvider.addSection('policies', {
         title: 'Policies',
         type: EntityFamily.POLICY,

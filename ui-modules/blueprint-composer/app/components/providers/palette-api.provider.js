@@ -92,6 +92,18 @@ class PaletteApiProvider extends PaletteApi {
         return this.locationApi.getLocation(locationSymbolicName);
     }
 
+    getSensors() {
+        return this.$q.resolve([
+            {
+                symbolicName: 'SshCommandSensor',
+                displayName: 'SshCommandSensor',
+                description: 'Execute an SSH command on the VM periodically and populate the sensor value with the ouput of this command',
+                supertypes: 'org.apache.brooklyn.core.effector.AddSensor',
+                type: 'org.apache.brooklyn.core.sensor.ssh.SshCommandSensor'
+            }
+        ]);
+    }
+
     create(bom, params) {
         return this.catalogApi.create(bom, params);
     }

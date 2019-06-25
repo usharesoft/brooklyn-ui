@@ -19,6 +19,7 @@
 import {graphicalEditEntityState} from './edit/entity/edit.entity.controller';
 import {graphicalEditPolicyState} from './edit/policy/edit.policy.controller';
 import {graphicalEditEnricherState} from './edit/enricher/edit.enricher.controller';
+import {graphicalEditSensorsState} from './edit/sensors/edit.sensors.controller';
 import {Entity, EntityFamily} from '../../../components/util/model/entity.model';
 import template from './graphical.state.html';
 
@@ -78,6 +79,10 @@ function graphicalController($rootScope, $scope, $state, $filter, blueprintServi
         else if (selectedType.supertypes.includes(EntityFamily.LOCATION.superType)) {
             blueprintService.populateLocationFromApi(targetEntity, selectedType);
             $state.go(graphicalEditEntityState, {entityId: targetEntity._id});
+        }
+        else if (selectedType.supertypes.includes(EntityFamily.SENSORS.superType)) {
+            blueprintService.populateSensor(targetEntity, selectedType);
+            $state.go(graphicalEditSensorsState, {entityId: targetEntity._id});
         }
     };
 
