@@ -78,6 +78,10 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
             });
         });
 
+        $scope.$on('d3.center', (event, left, right) => {
+            blueprintGraph.center(left, right);
+        });
+
         $scope.$on('d3.remove', (event, entity)=> {
             $log.debug(TAG + `Delete ${entity.family.displayName} ${entity._id}`, entity);
 
@@ -260,6 +264,10 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
             else if (draggedItem.supertypes.includes(EntityFamily.LOCATION.superType)) {
                 blueprintService.populateLocationFromApi(target, draggedItem);
                 $state.go(graphicalEditEntityState, {entityId: target._id});
+            }
+            else if (draggedItem.supertypes.includes(EntityFamily.SENSORS.superType)) {
+                blueprintService.populateSensor(target, draggedItem);
+                $state.go(graphicalEditSensorsState, {entityId: target._id});
             }
             blueprintService.refreshAllRelationships().then(()=> {
                 redrawGraph();

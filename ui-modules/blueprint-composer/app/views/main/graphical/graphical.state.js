@@ -19,6 +19,7 @@
 import {graphicalEditEntityState} from './edit/entity/edit.entity.controller';
 import {graphicalEditPolicyState} from './edit/policy/edit.policy.controller';
 import {graphicalEditEnricherState} from './edit/enricher/edit.enricher.controller';
+import {graphicalEditSensorsState} from './edit/sensors/edit.sensors.controller';
 import {Entity, EntityFamily} from '../../../components/util/model/entity.model';
 import template from './graphical.state.html';
 
@@ -28,14 +29,14 @@ export const graphicalState = {
     templateProvider: function(composerOverrides) {
         return composerOverrides.paletteGraphicalStateTemplate || template;
     },
-    controller: ['$scope', '$state', '$filter', 'blueprintService', 'paletteService', graphicalController],
+    controller: ['$rootScope', '$scope', '$state', '$filter', 'blueprintService', 'paletteService', graphicalController],
     controllerAs: 'vm',
     data: {
         label: 'Graphical Designer'
     }
 };
 
-function graphicalController($scope, $state, $filter, blueprintService, paletteService) {
+function graphicalController($rootScope, $scope, $state, $filter, blueprintService, paletteService) {
     this.EntityFamily = EntityFamily;
 
     $scope.$root.selectedSection = paletteService.getSections().entities;
@@ -79,5 +80,22 @@ function graphicalController($scope, $state, $filter, blueprintService, paletteS
             blueprintService.populateLocationFromApi(targetEntity, selectedType);
             $state.go(graphicalEditEntityState, {entityId: targetEntity._id});
         }
+        else if (selectedType.supertypes.includes(EntityFamily.SENSORS.superType)) {
+            blueprintService.populateSensor(targetEntity, selectedType);
+            $state.go(graphicalEditSensorsState, {entityId: targetEntity._id});
+        }
+    };
+
+    this.recenter = () => {
+        let left = 0;
+        let right = 0;
+        if (document.getElementsByClassName('toolbar-left').length === 1) 
+            left += document.getElementsByClassName('toolbar-left')[0].offsetWidth;
+        if (document.getElementsByClassName('pane-palette').length === 1) 
+            left += document.getElementsByClassName('pane-palette')[0].offsetWidth;
+        if (document.getElementsByClassName('pane-configuration').length === 1)
+            right += document.getElementsByClassName('pane-configuration')[0].offsetWidth;
+        
+        $rootScope.$broadcast('d3.center', left, right);
     };
 }

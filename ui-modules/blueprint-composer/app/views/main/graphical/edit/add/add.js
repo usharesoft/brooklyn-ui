@@ -20,6 +20,7 @@ import {graphicalEditEntityState} from '../entity/edit.entity.controller';
 import {graphicalEditSpecState} from '../spec/edit.spec.controller';
 import {graphicalEditPolicyState} from '../policy/edit.policy.controller';
 import {graphicalEditEnricherState} from '../enricher/edit.enricher.controller';
+import {graphicalEditSensorsState} from '../sensors/edit.sensors.controller';
 import {Entity, EntityFamily} from '../../../../../components/util/model/entity.model';
 import template from './add.html';
 
@@ -49,6 +50,9 @@ export function GraphicalEditAddController($scope, $filter, $state, $stateParams
             break;
         case EntityFamily.LOCATION.id.toLowerCase():
             $scope.family = EntityFamily.LOCATION;
+            break;
+        case EntityFamily.SENSORS.id.toLowerCase():
+            $scope.family = EntityFamily.SENSORS;
             break;
     }
 
@@ -96,6 +100,7 @@ export function GraphicalEditAddController($scope, $filter, $state, $stateParams
             case EntityFamily.POLICY: return "Add this policy";
             case EntityFamily.ENRICHER: return "Add this enricher";
             case EntityFamily.LOCATION: return "Add this location";
+            case EntityFamily.SENSORS: return "Add this sensor";
         }
         return "Select";
     };
@@ -133,6 +138,10 @@ export function GraphicalEditAddController($scope, $filter, $state, $stateParams
             case EntityFamily.LOCATION:
                 blueprintService.populateLocationFromApi($scope.entity, type);
                 $state.go(graphicalEditEntityState, {entityId: $scope.entity._id});
+                break;
+            case EntityFamily.SENSORS:
+                blueprintService.populateSensor($scope.entity, type);
+                $state.go(graphicalEditSensorsState, {entityId: $scope.entity._id});
                 break;
         }
     };

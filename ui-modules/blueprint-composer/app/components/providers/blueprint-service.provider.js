@@ -67,6 +67,7 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
         hasIssues: hasIssues,
         populateEntityFromApi: populateEntityFromApiSuccess,
         populateLocationFromApi: populateLocationFromApiSuccess,
+        populateSensor: populateSensor,
         addConfigKeyDefinition: addConfigKeyDefinition,
         getRelationships: getRelationships,
     };
@@ -642,6 +643,31 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
         entity.addIssue(Issue.builder().level(ISSUE_LEVEL.WARN).group('location').message($sce.trustAsHtml(`Location <samp>${!(entity.location instanceof String) ? JSON.stringify(entity.location) : entity.location}</samp> does not exist in your local catalog. Deployment might fail.`)).build());
         entity.miscData.set('locationName', entity.location);
         entity.miscData.set('locationIcon', typeNotFoundIcon);
+        return entity;
+    }
+
+    function populateSensor(entity, data) {
+        let sensor = {
+            name: 'sensor-' + Math.random().toString(36).slice(2),
+            sensorType: data.type,
+            type: 'string',
+            period: '5s',
+            command: 'date'
+        };
+        entity.miscData.get('sensors').push(sensor);
+        if (!entity.metadata.has('brooklyn.initializers')) {
+            entity.metadata.set('brooklyn.initializers', []);
+        }
+        let sensorYaml = {
+            type: data.type,
+            'brooklyn.config': {
+                name: sensor.name,
+                period: sensor.period,
+                targetType: sensor.type,
+                command: sensor.command
+            }
+        };
+        entity.metadata.get('brooklyn.initializers').push(sensorYaml);
         return entity;
     }
 
