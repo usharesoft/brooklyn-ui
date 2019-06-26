@@ -22,7 +22,7 @@ import {D3Blueprint} from "../util/d3-blueprint";
 import {EntityFamily} from '../util/model/entity.model';
 import {graphicalEditEntityState} from '../../views/main/graphical/edit/entity/edit.entity.controller';
 import {graphicalEditSpecState} from '../../views/main/graphical/edit/spec/edit.spec.controller';
-import {graphicalEditPolicyState} from '../../views/main/graphical/edit/policy/edit.policy.controller';
+import {graphicalEditPoliciesState} from '../../views/main/graphical/edit/policies/edit.policies.controller';
 import {graphicalEditEnricherState} from '../../views/main/graphical/edit/enricher/edit.enricher.controller';
 import {graphicalEditSensorsState} from '../../views/main/graphical/edit/sensors/edit.sensors.controller';
 
@@ -30,9 +30,6 @@ const MODULE_NAME = 'brooklyn.components.designer';
 const TEMPLATE_URL = 'blueprint-composer/component/designer/index.html';
 const ANY_MEMBERSPEC_REGEX = /(^.*[m,M]ember[s,S]pec$)/;
 const TAG = 'DIRECTIVE :: DESIGNER :: ';
-
-const ENTITY_CORE = 'ENTITY_CORE';
-const SENSORS_SATELLITE = 'SENSORS_SATELLITE';
 
 angular.module(MODULE_NAME, [])
     .directive('designer', ['$log', '$state', '$q', 'iconGenerator', 'catalogApi', 'blueprintService', 'brSnackbar', 'paletteDragAndDropService', designerDirective])
@@ -65,7 +62,7 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
         });
 
         $scope.selectedEntity = null;
-        $scope.selectedNodePart = null;
+        $scope.selectedNodePart = EntityFamily.ENTITY;
 
         $scope.$on('d3.redraw', (event, initial)=> {
             $log.debug(TAG + 'Re-draw blueprint, triggered by ' + event.name, $scope.blueprint);
@@ -121,27 +118,27 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
             switch(toState) {
                 case graphicalEditEntityState:
                     id = toParams.entityId;
-                    $scope.selectedNodePart = ENTITY_CORE;
+                    $scope.selectedNodePart = EntityFamily.ENTITY;
                     break;
                 case graphicalEditSensorsState:
                     id = toParams.entityId;
-                    $scope.selectedNodePart = SENSORS_SATELLITE;
+                    $scope.selectedNodePart = EntityFamily.SENSORS;
                     break;
                 case graphicalEditSpecState:
                     id = toParams.specId;
-                    $scope.selectedNodePart = ENTITY_CORE;
+                    $scope.selectedNodePart = EntityFamily.SPEC;
                     break;
-                case graphicalEditPolicyState:
-                    id = toParams.policyId;
-                    $scope.selectedNodePart = ENTITY_CORE;
+                case graphicalEditPoliciesState:
+                    id = toParams.entityId;
+                    $scope.selectedNodePart = EntityFamily.POLICY;
                     break;
                 case graphicalEditEnricherState:
                     id = toParams.enricherId;
-                    $scope.selectedNodePart = ENTITY_CORE;
+                    $scope.selectedNodePart = EntityFamily.ENRICHER;
                     break;
             }
             if (angular.isDefined(id)) {
-                $log.debug(TAG + 'Select canvas, selected node: ' + id);
+                $log.debug(TAG + 'Select canvas, selected node: ' + id + ' part: ' + $scope.selectedNodePart.displayName);
                 $scope.selectedEntity = blueprintService.findAny(id);
                 if ($scope.onSelectionChange) $scope.onSelectionChange($scope.selectedEntity);
             }
@@ -170,9 +167,6 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
                     case EntityFamily.SPEC:
                         $state.go(graphicalEditSpecState, {entityId: event.detail.entity.parent._id, specId: event.detail.entity._id});
                         break;
-                    case EntityFamily.POLICY:
-                        $state.go(graphicalEditPolicyState, {entityId: event.detail.entity.parent._id, policyId: event.detail.entity._id});
-                        break;
                     case EntityFamily.ENRICHER:
                         $state.go(graphicalEditEnricherState, {entityId: event.detail.entity.parent._id, enricherId: event.detail.entity._id});
                         break;
@@ -184,6 +178,13 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
             $scope.$apply(()=>{
                 $log.debug(TAG + 'edit sensors of node ' + event.detail.entity._id, event.detail.entity);
                 $state.go(graphicalEditSensorsState, { entityId: event.detail.entity._id });
+            });
+        });
+
+        $element.bind('click-policies', (event)=> {
+            $scope.$apply(()=>{
+                $log.debug(TAG + 'edit policies of node ' + event.detail.entity._id, event.detail.entity);
+                $state.go(graphicalEditPoliciesState, {entityId: event.detail.entity._id});
             });
         });
 
@@ -251,7 +252,7 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
                 let newPolicy = blueprintService.populateEntityFromApi(new Entity(), draggedItem);
                 target.addPolicy(newPolicy);
                 blueprintService.refreshEntityMetadata(newPolicy, EntityFamily.POLICY).then(() => {
-                    $state.go(graphicalEditPolicyState, {entityId: target._id, policyId: newPolicy._id});
+                    $state.go(graphicalEditPoliciesState, {entityId: target._id});
                 });
             }
             else if (draggedItem.supertypes.includes(EntityFamily.ENRICHER.superType)) {
@@ -275,13 +276,17 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
         });
 
         function redrawGraph() {
+            $log.debug(TAG + 'redrawGraph ' + $scope.selectedNodePart.displayName, $scope.selectedEntity);
             let crossLinks = blueprintService.getRelationships();
 
             blueprintGraph.update($scope.blueprint, crossLinks).draw();
             if ($scope.selectedEntity) {
                 switch($scope.selectedNodePart) {
-                    case SENSORS_SATELLITE:
+                    case EntityFamily.SENSORS:
                         blueprintGraph.selectSensors($scope.selectedEntity._id);
+                        break;
+                    case EntityFamily.POLICY:
+                        blueprintGraph.selectPolicies($scope.selectedEntity._id);
                         break;
                     default:
                         blueprintGraph.select($scope.selectedEntity._id);

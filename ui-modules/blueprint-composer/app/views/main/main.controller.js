@@ -22,7 +22,6 @@ import {EntityFamily} from '../../components/util/model/entity.model';
 import {graphicalState} from './graphical/graphical.state';
 import {yamlState} from './yaml/yaml.state';
 import {graphicalEditEntityState} from './graphical/edit/entity/edit.entity.controller';
-import {graphicalEditPolicyState} from './graphical/edit/policy/edit.policy.controller';
 import {graphicalEditEnricherState} from './graphical/edit/enricher/edit.enricher.controller';
 import {graphicalEditSpecState} from './graphical/edit/spec/edit.spec.controller';
 import bottomSheetTemplate from './bottom-sheet.template.html';
@@ -105,7 +104,6 @@ export function MainController($scope, $element, $log, $state, $stateParams, brB
 
     vm.saveToCatalogConfig = {};
     if (edit) {
-        console.log("edit", edit);
         vm.saveToCatalogConfig = Object.assign(vm.saveToCatalogConfig, {
             version: edit.type.version,
             template: edit.type.template || false,

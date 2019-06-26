@@ -58,6 +58,7 @@ import dslService from "./components/providers/dsl-service.provider";
 import paletteDragAndDropService from "./components/providers/palette-dragndrop.provider";
 import actionService from "./components/providers/action-service.provider";
 import sensorsList from "./components/sensors-list/sensors-list.directive";
+import policiesListEditor from "./components/policies-list-editor/policies-list-editor.directive";
 import {mainState} from "./views/main/main.controller";
 import {yamlState} from "./views/main/yaml/yaml.state";
 import {graphicalState} from "./views/main/graphical/graphical.state";
@@ -65,6 +66,7 @@ import {graphicalEditState} from "./views/main/graphical/edit/edit.controller";
 import {graphicalEditAddState} from "./views/main/graphical/edit/add/add";
 import {graphicalEditEntityState} from "./views/main/graphical/edit/entity/edit.entity.controller";
 import {graphicalEditPolicyState} from "./views/main/graphical/edit/policy/edit.policy.controller";
+import {graphicalEditPoliciesState} from "./views/main/graphical/edit/policies/edit.policies.controller";
 import {graphicalEditEnricherState} from "./views/main/graphical/edit/enricher/edit.enricher.controller";
 import {graphicalEditSensorsState} from "./views/main/graphical/edit/sensors/edit.sensors.controller";
 import {graphicalEditSpecState} from "./views/main/graphical/edit/spec/edit.spec.controller";
@@ -79,7 +81,7 @@ angular.module('app', [ngAnimate, ngResource, ngCookies, ngClipboard, uiRouter, 
     brYamlEditor, brUtils, brSpecEditor, brooklynCatalogSaver, brooklynApi, bottomSheet, stackViewer, brDragndrop,
     customActionDirective, customConfigSuggestionDropdown, paletteApiProvider, paletteServiceProvider, blueprintLoaderApiProvider,
     breadcrumbs, catalogSelector, notReadyAppliance, designer, objectCache, entityFilters, locationFilter, actionService,
-    sensorsList, blueprintService, dslService, paletteDragAndDropService, recentlyUsedService, scriptTagDecorator])
+    sensorsList, policiesListEditor, blueprintService, dslService, paletteDragAndDropService, recentlyUsedService, scriptTagDecorator])
     .provider('composerOverrides', composerOverridesProvider)
     .filter('dslParamLabel', ['$filter', dslParamLabelFilter])
     .config(['$urlRouterProvider', '$stateProvider', '$logProvider', applicationConfig])
@@ -100,6 +102,7 @@ function applicationConfig($urlRouterProvider, $stateProvider, $logProvider) {
         .state(graphicalEditState)
         .state(graphicalEditEntityState)
         .state(graphicalEditPolicyState)
+        .state(graphicalEditPoliciesState)
         .state(graphicalEditEnricherState)
         .state(graphicalEditSensorsState)
         .state(graphicalEditSpecState)
@@ -135,7 +138,7 @@ function paletteConfig(paletteServiceProvider) {
     paletteServiceProvider.addSection('policies', {
         title: 'Policies',
         type: EntityFamily.POLICY,
-        icon: 'fa-heartbeat'
+        icon: 'fa-balance-scale'
     });
     paletteServiceProvider.addSection('enrichers', {
         title: 'Enrichers',

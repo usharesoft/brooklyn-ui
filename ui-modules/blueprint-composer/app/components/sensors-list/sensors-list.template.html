@@ -16,7 +16,7 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<div class="title-separator" ng-click="editionMode(sensor)">{{title}}</div>
+<div class="title-separator" ng-click="editionMode($event, null)">{{title}}</div>
 
 <div ng-repeat="sensor in sensors">
     <div class="sensor-widget" ng-if="!sensor.template">
