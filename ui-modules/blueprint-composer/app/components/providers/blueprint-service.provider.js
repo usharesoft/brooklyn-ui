@@ -245,38 +245,7 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
 
             promise.then((data)=> {
                 getSensorsFromYaml(entity).forEach((specificSensor) => {
-                    const sensor = {
-                        sensorType: specificSensor.type,
-                        template: specificSensor,
-                        updateMetainfo: function() {
-                            this.name = this.template['brooklyn.config'].name;
-                            this.type = this.template['brooklyn.config'].targetType;
-                            this.description = this.template['brooklyn.config'].description;
-                        },
-                        deleteSensor: function() {
-                            let i = 0;
-                            const initializers = entity.metadata.get('brooklyn.initializers');
-                            while (i < initializers.length && initializers[i] != this.template) {
-                                i++;
-                            }
-                            if (i < initializers.length) {
-                                initializers.splice(i, 1);
-                                if (initializers.length == 0) {
-                                    entity.metadata.delete('brooklyn.initializers');
-                                }
-                            }
-
-                            i = 0;
-                            while (i < data.sensors.length && data.sensors[i] != this) {
-                                i++;
-                            }
-                            if (i < data.sensors.length) {
-                                data.sensors.splice(i, 1);
-                            }
-                        }
-                    }
-                    sensor.updateMetainfo();
-                    data.sensors.push(sensor);
+                    createSensorFromSensorYaml(entity, data.sensors, specificSensor);
                 });
                 deferred.resolve(populateEntityFromApiSuccess(entity, data));
             }).catch(function (error) {
@@ -647,28 +616,54 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
     }
 
     function populateSensor(entity, data) {
-        let sensor = {
-            name: 'sensor-' + Math.random().toString(36).slice(2),
-            sensorType: data.type,
-            type: 'string',
-            period: '5s',
-            command: 'date'
-        };
-        entity.miscData.get('sensors').push(sensor);
         if (!entity.metadata.has('brooklyn.initializers')) {
             entity.metadata.set('brooklyn.initializers', []);
         }
         let sensorYaml = {
             type: data.type,
             'brooklyn.config': {
-                name: sensor.name,
-                period: sensor.period,
-                targetType: sensor.type,
-                command: sensor.command
+                name: 'sensor-' + Math.random().toString(36).slice(2),
+                period: '5s',
+                targetType: 'string',
+                command: 'date'
             }
         };
         entity.metadata.get('brooklyn.initializers').push(sensorYaml);
+        createSensorFromSensorYaml(entity, entity.miscData.get('sensors'), sensorYaml);
         return entity;
+    }
+
+    function createSensorFromSensorYaml(entity, sensors, specificSensor) {
+        const sensor = {
+            sensorType: specificSensor.type,
+            template: specificSensor,
+            updateMetainfo: function() {
+                this.name = this.template['brooklyn.config'].name;
+                this.type = this.template['brooklyn.config'].targetType;
+                this.description = this.template['brooklyn.config'].description;
+            },
+            deleteSensor: function() {
+                const initializers = entity.metadata.get('brooklyn.initializers');
+                for(let i = 0; i < initializers.length; i++){ 
+                    if (initializers[i] === this.template) {
+                        initializers.splice(i, 1);
+                        break;
+                    }
+                }
+                if (initializers.length == 0) {
+                    entity.metadata.delete('brooklyn.initializers');
+                }
+
+                for(let i = 0; i < sensors.length; i++){ 
+                    if (sensors[i] === this) {
+                        sensors.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+        sensor.updateMetainfo();
+        sensors.push(sensor);
     }
 
     /**
