@@ -66,7 +66,7 @@ function graphicalController($rootScope, $scope, $state, $filter, blueprintServi
             let newPolicy = blueprintService.populateEntityFromApi(new Entity(), selectedType);
             targetEntity.addPolicy(newPolicy);
             blueprintService.refreshEntityMetadata(newPolicy, EntityFamily.POLICY).then(() => {
-                $state.go(graphicalEditPoliciesState, {entityId: targetEntity._id});
+                $state.go(graphicalEditPoliciesState, {entityId: targetEntity._id, policy: newPolicy});
             });
         }
         else if (selectedType.supertypes.includes(EntityFamily.ENRICHER.superType)) {

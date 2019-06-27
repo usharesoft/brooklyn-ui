@@ -24,22 +24,22 @@ const MODULE_NAME = 'brooklyn.components.policies';
 const TEMPLATE_URL = 'blueprint-composer/component/policies-list-editor/index.html';
 
 angular.module(MODULE_NAME, [])
-    .directive('policiesListEditor', ['$state', policiesListEditorDirective])
+    .directive('policiesListEditor', ['$state', '$stateParams', policiesListEditorDirective])
     .run(['$templateCache', templateCache]);
 
 export default MODULE_NAME;
 
-export function policiesListEditorDirective($state) {
+export function policiesListEditorDirective($state, $stateParams) {
     return {
         restrict: 'E',
         templateUrl: function(tElement, tAttrs) {
             return tAttrs.templateUrl || TEMPLATE_URL;
         },
         scope: {
-            entity: '=entity'
+            entity: '=entity',
         },
         link: function($scope) {
-            $scope.editedPolicy = null;
+            $scope.editedPolicy = $stateParams.policy;
             $scope.edit = function(policy) {
                 $scope.editedPolicy = policy;
             }

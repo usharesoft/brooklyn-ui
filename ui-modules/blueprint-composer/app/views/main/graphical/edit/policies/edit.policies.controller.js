@@ -28,4 +28,7 @@ export const graphicalEditPoliciesState = {
     template: template,
     controller: ['$scope', 'entity', EditPoliciesController],
     controllerAs: 'vm',
+    params: {
+        'policy': null
+    }
 };

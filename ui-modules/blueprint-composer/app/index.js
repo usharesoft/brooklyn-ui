@@ -65,7 +65,6 @@ import {graphicalState} from "./views/main/graphical/graphical.state";
 import {graphicalEditState} from "./views/main/graphical/edit/edit.controller";
 import {graphicalEditAddState} from "./views/main/graphical/edit/add/add";
 import {graphicalEditEntityState} from "./views/main/graphical/edit/entity/edit.entity.controller";
-import {graphicalEditPolicyState} from "./views/main/graphical/edit/policy/edit.policy.controller";
 import {graphicalEditPoliciesState} from "./views/main/graphical/edit/policies/edit.policies.controller";
 import {graphicalEditEnricherState} from "./views/main/graphical/edit/enricher/edit.enricher.controller";
 import {graphicalEditSensorsState} from "./views/main/graphical/edit/sensors/edit.sensors.controller";
@@ -101,7 +100,6 @@ function applicationConfig($urlRouterProvider, $stateProvider, $logProvider) {
         .state(graphicalEditAddState)
         .state(graphicalEditState)
         .state(graphicalEditEntityState)
-        .state(graphicalEditPolicyState)
         .state(graphicalEditPoliciesState)
         .state(graphicalEditEnricherState)
         .state(graphicalEditSensorsState)

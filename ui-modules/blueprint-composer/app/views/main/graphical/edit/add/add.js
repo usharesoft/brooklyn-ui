@@ -125,7 +125,7 @@ export function GraphicalEditAddController($scope, $filter, $state, $stateParams
                 let newPolicy = blueprintService.populateEntityFromApi(new Entity(), type);
                 $scope.entity.addPolicy(newPolicy);
                 blueprintService.refreshEntityMetadata(newPolicy, EntityFamily.POLICY).then(() => {
-                    $state.go(graphicalEditPoliciesState, {entityId: $scope.entity._id});
+                    $state.go(graphicalEditPoliciesState, {entityId: $scope.entity._id, policy: newPolicy});
                 });
                 break;
             case EntityFamily.ENRICHER:

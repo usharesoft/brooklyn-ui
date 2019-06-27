@@ -252,7 +252,7 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
                 let newPolicy = blueprintService.populateEntityFromApi(new Entity(), draggedItem);
                 target.addPolicy(newPolicy);
                 blueprintService.refreshEntityMetadata(newPolicy, EntityFamily.POLICY).then(() => {
-                    $state.go(graphicalEditPoliciesState, {entityId: target._id});
+                    $state.go(graphicalEditPoliciesState, {entityId: target._id, policy: newPolicy});
                 });
             }
             else if (draggedItem.supertypes.includes(EntityFamily.ENRICHER.superType)) {

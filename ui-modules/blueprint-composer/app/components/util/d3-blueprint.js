@@ -126,8 +126,8 @@ export function D3Blueprint(container, $scope) {
                     class: 'node-warning',
                     width: 24,
                     height: 24,
-                    x: 65,
-                    y: -15,
+                    x: 50,
+                    y: -50,
                     'xlink:href': warningIcon
                 }
             },
