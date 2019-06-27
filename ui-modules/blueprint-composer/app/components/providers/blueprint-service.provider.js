@@ -36,14 +36,14 @@ export const DSL_ENTITY_SPEC = '$brooklyn:entitySpec';
 
 export function blueprintServiceProvider() {
     return {
-        $get: ['$log', '$q', '$sce', 'paletteApi', 'iconGenerator', 'dslService',
-            function ($log, $q, $sce, paletteApi, iconGenerator, dslService) {
-            return new BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService);
+        $get: ['$log', '$q', '$sce', '$rootScope', 'paletteApi', 'iconGenerator', 'dslService',
+            function ($log, $q, $sce, $rootScope, paletteApi, iconGenerator, dslService) {
+            return new BlueprintService($log, $q, $sce, $rootScope, paletteApi, iconGenerator, dslService);
         }]
     }
 }
 
-function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService) {
+function BlueprintService($log, $q, $sce, $rootScope, paletteApi, iconGenerator, dslService) {
     let blueprint = new Entity();
 
     return {
@@ -630,6 +630,7 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
         };
         entity.metadata.get('brooklyn.initializers').push(sensorYaml);
         createSensorFromSensorYaml(entity, entity.miscData.get('sensors'), sensorYaml);
+        $rootScope.$broadcast('UpdateSensorsList', null);
         return entity;
     }
 
