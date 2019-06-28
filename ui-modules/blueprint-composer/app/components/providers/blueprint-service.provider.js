@@ -36,14 +36,14 @@ export const DSL_ENTITY_SPEC = '$brooklyn:entitySpec';
 
 export function blueprintServiceProvider() {
     return {
-        $get: ['$log', '$q', '$sce', 'paletteApi', 'iconGenerator', 'dslService',
-            function ($log, $q, $sce, paletteApi, iconGenerator, dslService) {
-            return new BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService);
+        $get: ['$log', '$q', '$sce', '$rootScope', 'paletteApi', 'iconGenerator', 'dslService',
+            function ($log, $q, $sce, $rootScope, paletteApi, iconGenerator, dslService) {
+            return new BlueprintService($log, $q, $sce, $rootScope, paletteApi, iconGenerator, dslService);
         }]
     }
 }
 
-function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService) {
+function BlueprintService($log, $q, $sce, $rootScope, paletteApi, iconGenerator, dslService) {
     let blueprint = new Entity();
 
     return {
@@ -244,12 +244,8 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
                 : paletteApi.getType(entity.type, entity.version, entity.config);
 
             promise.then((data)=> {
-                let sensors = getSensorsFromYaml(entity);
-                sensors.forEach((specificSensor) => {
-                    let sensor = specificSensor['brooklyn.config'];
-                    sensor.type = specificSensor['brooklyn.config'].targetType;
-                    sensor.sensorType = specificSensor.type;
-                    data.sensors.push(sensor);
+                getSensorsFromYaml(entity).forEach((specificSensor) => {
+                    createSensorFromSensorYaml(entity, data.sensors, specificSensor);
                 });
                 deferred.resolve(populateEntityFromApiSuccess(entity, data));
             }).catch(function (error) {
@@ -273,7 +269,7 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
 
     function getSensorsFromYaml(entity) {
         let sensors = [];
-        let initializers = entity.getData()['brooklyn.initializers'];
+        let initializers = entity.metadata.get('brooklyn.initializers');
         if (initializers) {
             initializers.forEach((initializer) => {
                 if (initializer.type == "org.apache.brooklyn.core.sensor.ssh.SshCommandSensor") {
@@ -620,28 +616,55 @@ function BlueprintService($log, $q, $sce, paletteApi, iconGenerator, dslService)
     }
 
     function populateSensor(entity, data) {
-        let sensor = {
-            name: 'sensor-' + Math.random().toString(36).slice(2),
-            sensorType: data.type,
-            type: 'string',
-            period: '5s',
-            command: 'date'
-        };
-        entity.miscData.get('sensors').push(sensor);
         if (!entity.metadata.has('brooklyn.initializers')) {
             entity.metadata.set('brooklyn.initializers', []);
         }
         let sensorYaml = {
             type: data.type,
             'brooklyn.config': {
-                name: sensor.name,
-                period: sensor.period,
-                targetType: sensor.type,
-                command: sensor.command
+                name: 'sensor-' + Math.random().toString(36).slice(2),
+                period: '5s',
+                targetType: 'string',
+                command: 'date'
             }
         };
         entity.metadata.get('brooklyn.initializers').push(sensorYaml);
+        createSensorFromSensorYaml(entity, entity.miscData.get('sensors'), sensorYaml);
+        $rootScope.$broadcast('UpdateSensorsList', null);
         return entity;
+    }
+
+    function createSensorFromSensorYaml(entity, sensors, specificSensor) {
+        const sensor = {
+            sensorType: specificSensor.type,
+            template: specificSensor,
+            updateMetainfo: function() {
+                this.name = this.template['brooklyn.config'].name;
+                this.type = this.template['brooklyn.config'].targetType;
+                this.description = this.template['brooklyn.config'].description;
+            },
+            deleteSensor: function() {
+                const initializers = entity.metadata.get('brooklyn.initializers');
+                for(let i = 0; i < initializers.length; i++){ 
+                    if (initializers[i] === this.template) {
+                        initializers.splice(i, 1);
+                        break;
+                    }
+                }
+                if (initializers.length == 0) {
+                    entity.metadata.delete('brooklyn.initializers');
+                }
+
+                for(let i = 0; i < sensors.length; i++){ 
+                    if (sensors[i] === this) {
+                        sensors.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+        sensor.updateMetainfo();
+        sensors.push(sensor);
     }
 
     /**

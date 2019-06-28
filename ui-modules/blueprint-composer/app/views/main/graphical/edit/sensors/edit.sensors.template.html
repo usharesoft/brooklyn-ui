@@ -23,6 +23,7 @@
         <h3>Sensors of {{entity.name || entity.miscData.get('typeName')}}</h3>
     </div>
 
-    <sensors-list sensors="catalogSensors" panel-title="Entity sensors"></sensors-list>
+    <sensors-list sensors="specificSensors" title="'Specific sensor'" ng-if="specificSensors.length > 0"></sensors-list>
+    <sensors-list sensors="genericSensors" title="'Generic sensor'" ng-if="genericSensors.length > 0"></sensors-list>
 
 </div>

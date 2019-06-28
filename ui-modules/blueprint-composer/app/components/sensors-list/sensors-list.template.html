@@ -16,28 +16,52 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<div class="title-separator" ng-if="constainsSpecificSensor()">Specific sensor</div>
+<div class="title-separator" ng-click="editionMode(sensor)">{{title}}</div>
 
-<div class="sensor-widget" ng-repeat="sensor in sensors" ng-if="sensor.sensorType">
+<div ng-repeat="sensor in sensors">
+    <div class="sensor-widget" ng-if="!sensor.template">
         <span class="sensor-name">{{sensor.name}}</span>
         <span class="sensor-info">
             <i class="fa fa-fw fa-info-circle" popover-trigger="'mouseenter'"
-               popover-title="{{sensor.name}}"
-               uib-popover-template="'blueprint-composer/component/sensors-list/sensor-yaml-info.html'"
-               popover-class="spec-editor-popover" popover-placement="bottom-left" popover-append-to-body="true"></i>
+                popover-title="{{sensor.name}}"
+                uib-popover-template="'blueprint-composer/component/sensors-list/sensor-info.html'"
+                popover-class="spec-editor-popover" popover-placement="top-right" popover-append-to-body="true"></i>
         </span>
-</div>
-
-<div class="title-separator" ng-if="constainsGenericSensor()">Generic sensor</div>
-
-<div class="sensor-widget" ng-repeat="sensor in sensors" ng-if="!sensor.sensorType">
-        <span class="sensor-name">{{sensor.name}}</span>
-        <span class="sensor-info">
-            <i class="fa fa-fw fa-info-circle" popover-trigger="'mouseenter'"
-               popover-title="{{sensor.name}}"
-               uib-popover-template="'blueprint-composer/component/sensors-list/sensor-info.html'"
-               popover-class="spec-editor-popover" popover-placement="top-right" popover-append-to-body="true"></i>
-        </span>
+    </div>
+    <div class="sensor-widget" title="Click to edit sensor" ng-if="sensor.template" ng-click="editionMode($event, sensor)">
+        <span class="sensor-name" ng-if="editionName != sensor.template['brooklyn.config'].name">{{sensor.template['brooklyn.config'].name}}</span>
+        <div ng-if="editionName == sensor.template['brooklyn.config'].name">
+            <div class="edit-sensor-button pull-right">
+                <i class="fa fa-fw fa-trash" title="Delete sensor" ng-click="delete($event, sensor)"></i>
+                <i class="fa fa-fw fa-times" title="Close selected sensor" ng-click="editionMode($event, null)"></i>
+            </div>
+            <span>
+                <label for="sensor-edition-name" class="label-spec-configuration ">Name</label>
+                <input id="sensor-edition-name" ng-model="sensor.template['brooklyn.config'].name" ng-change="updateSensorYaml(sensor)" type="text" 
+                    class="form-control"/>
+            </span>
+            <span>
+                <label for="sensor-edition-description">Description</label>
+                <textarea id="sensor-edition-description" ng-model="sensor.template['brooklyn.config'].description" ng-change="updateSensorYaml(sensor)" 
+                    class="form-control" auto-grow></textarea>
+            </span>
+            <span>
+                <label for="sensor-edition-targetType">Return type</label>
+                <input id="sensor-edition-targetType" ng-model="sensor.template['brooklyn.config'].targetType" ng-change="updateSensorYaml(sensor)" type="text"
+                    class="form-control"/>
+            </span>
+            <span>
+                <label for="sensor-edition-period">Period</label>
+                <input id="sensor-edition-period" ng-model="sensor.template['brooklyn.config'].period" ng-change="updateSensorYaml(sensor)" type="text"
+                    class="form-control"/>
+            </span>
+            <span>
+                <label for="sensor-edition-command">Command</label>
+                <textarea id="sensor-edition-command" ng-model="sensor.template['brooklyn.config'].command" ng-change="updateSensorYaml(sensor)" 
+                class="form-control" auto-grow></textarea>
+            </span>
+        </div>
+    </div>
 </div>
 
 <!-- CONFIG INFO TEMPLATE :: START -->
@@ -49,22 +73,5 @@
         </div>
         <p class="quick-info-description" ng-if="sensor.description">{{sensor.description}}</p>
     </div>
-
-</script>
-
-<script type="text/ng-template" id="blueprint-composer/component/sensors-list/sensor-yaml-info.html" defer-to-preexisting-id="true">
-    <div class="config-item-quick-info">
-        <div class="quick-info-metadata">
-            <p><i class="mini-icon fa fa-fw fa-cog"></i> <samp class="type-symbolic-name">{{sensor.name}}</samp>
-                <span class="config-type label-color column-for-type oneline label label-success">{{sensor.sensorType}}</span></p>
-        </div>
-        <p class="quick-info-description sensor-yaml-description" ng-if="sensor.description">{{sensor.description}}</p>
-        <div class="quick-info-description">
-            <div>Return type: {{sensor.type}}</div>
-            <div>Period: {{sensor.period}}</div>
-            <div>Command: {{sensor.command}}</div>
-        </div>
-    </div>
-
 </script>
 <!-- CONFIG INFO TEMPLATE :: START-->

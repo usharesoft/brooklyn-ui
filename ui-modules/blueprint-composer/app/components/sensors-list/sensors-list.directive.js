@@ -35,26 +35,33 @@ export function sensorsListDirective() {
             return tAttrs.templateUrl || TEMPLATE_URL;
         },
         scope: {
+            title: '=title',
             sensors: '=sensors'
         },
         link: function($scope) {
-            $scope.sensors = $scope.sensors.sort((a, b) => {
-                if (a.name) {
-                    return a.name.localeCompare(b.name);
+            $scope.editionName = null;
+            $scope.updateSensorYaml = function(sensor) {
+                $scope.editionName = sensor.template['brooklyn.config'].name;
+                sensor.updateMetainfo();
+            }
+            $scope.editionMode = function(event, sensor) {
+                event.stopPropagation();
+                if (sensor) {
+                    $scope.editionName = sensor.template['brooklyn.config'].name;
                 } else {
-                    return 1;
+                    $scope.editionName = null;
                 }
-            });
-            $scope.constainsGenericSensor = function() {
-                return $scope.sensors.find((sensor) => {
-                    return !sensor.sensorType;
-                }) != null;
-            };
-            $scope.constainsSpecificSensor = function() {
-                return $scope.sensors.find((sensor) => {
-                    return sensor.sensorType;
-                }) != null;
-            };
+            }
+            $scope.delete = function(event, sensor) {
+                event.stopPropagation();
+                sensor.deleteSensor();
+                for(let i = 0; i < $scope.sensors.length; i++){ 
+                    if ($scope.sensors[i] === sensor) {
+                        $scope.sensors.splice(i, 1);
+                        break;
+                    }
+                }
+            }
         }
     };
 }
