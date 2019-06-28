@@ -45,6 +45,9 @@ export const graphicalEditSensorsState = {
     template: template,
     controller: ['$scope', '$rootScope', 'entity', EditSensorsController],
     controllerAs: 'vm',
+    params: {
+        'sensor': null
+    }
 };
 
 function sortSensors(sensors) {

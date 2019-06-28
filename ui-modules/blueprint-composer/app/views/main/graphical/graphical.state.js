@@ -81,8 +81,8 @@ function graphicalController($rootScope, $scope, $state, $filter, blueprintServi
             $state.go(graphicalEditEntityState, {entityId: targetEntity._id});
         }
         else if (selectedType.supertypes.includes(EntityFamily.SENSORS.superType)) {
-            blueprintService.populateSensor(targetEntity, selectedType);
-            $state.go(graphicalEditSensorsState, {entityId: targetEntity._id});
+            let sensor = blueprintService.populateSensor(targetEntity, selectedType);
+            $state.go(graphicalEditSensorsState, {entityId: targetEntity._id, sensor: sensor});
         }
     };
 

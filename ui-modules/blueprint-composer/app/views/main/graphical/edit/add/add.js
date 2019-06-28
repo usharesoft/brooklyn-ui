@@ -140,8 +140,8 @@ export function GraphicalEditAddController($scope, $filter, $state, $stateParams
                 $state.go(graphicalEditEntityState, {entityId: $scope.entity._id});
                 break;
             case EntityFamily.SENSORS:
-                blueprintService.populateSensor($scope.entity, type);
-                $state.go(graphicalEditSensorsState, {entityId: $scope.entity._id});
+                let sensor = blueprintService.populateSensor($scope.entity, type);
+                $state.go(graphicalEditSensorsState, {entityId: $scope.entity._id, sensor: sensor});
                 break;
         }
     };
