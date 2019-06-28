@@ -55,12 +55,11 @@ export function sensorsListDirective() {
             $scope.delete = function(event, sensor) {
                 event.stopPropagation();
                 sensor.deleteSensor();
-                let i = 0;
-                while (i < $scope.sensors.length && $scope.sensors[i] != sensor) {
-                    i++;
-                }
-                if (i < $scope.sensors.length) {
-                    $scope.sensors.splice(i, 1);
+                for(let i = 0; i < $scope.sensors.length; i++){ 
+                    if ($scope.sensors[i] === sensor) {
+                        $scope.sensors.splice(i, 1);
+                        break;
+                    }
                 }
             }
         }

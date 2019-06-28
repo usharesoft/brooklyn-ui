@@ -18,26 +18,32 @@
  */
 import template from './edit.sensors.template.html';
 
-export function EditSensorsController($scope, entity) {
-    $scope.genericSensors = [];
-    $scope.specificSensors = [];
-    entity.miscData.get('sensors')
-        .forEach(sensor => {
-            if (sensor.template) {
-                $scope.specificSensors.push(sensor);
-            } else {
-                $scope.genericSensors.push(sensor);
-            }
-        });
-    sortSensors($scope.genericSensors);
-    sortSensors($scope.specificSensors);
+export function EditSensorsController($scope, $rootScope, entity) {
+    function updateSensorsLists() {
+        $scope.genericSensors = [];
+        $scope.specificSensors = [];
+        entity.miscData.get('sensors')
+            .forEach(sensor => {
+                if (sensor.template) {
+                    $scope.specificSensors.push(sensor);
+                } else {
+                    $scope.genericSensors.push(sensor);
+                }
+            });
+        sortSensors($scope.genericSensors);
+        sortSensors($scope.specificSensors);
+    }
+    updateSensorsLists();
+    $rootScope.$on('UpdateSensorsList', () => {
+        updateSensorsLists();
+    });
 }
 
 export const graphicalEditSensorsState = {
     name: 'main.graphical.edit.sensors',
     url: '/sensors',
     template: template,
-    controller: ['$scope', 'entity', EditSensorsController],
+    controller: ['$scope', '$rootScope', 'entity', EditSensorsController],
     controllerAs: 'vm',
 };
 
