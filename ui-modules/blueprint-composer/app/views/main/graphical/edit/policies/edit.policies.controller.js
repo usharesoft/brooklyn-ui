@@ -16,21 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import template from './edit.policy.template.html';
+import template from './edit.policies.template.html';
 
-export function EditPolicyController($scope, policy) {
-    $scope.policy = policy;
+export function EditPoliciesController($scope, entity) {
+    $scope.entity = entity;
 }
 
-export const graphicalEditPolicyState = {
-    name: 'main.graphical.edit.policy',
-    url: '/policy/:policyId',
+export const graphicalEditPoliciesState = {
+    name: 'main.graphical.edit.policies',
+    url: '/policies',
     template: template,
-    controller: ['$scope', 'policy', EditPolicyController],
+    controller: ['$scope', 'entity', EditPoliciesController],
     controllerAs: 'vm',
-    resolve: {
-        policy: ['$stateParams', 'entity', function($stateParams, entity) {
-            return entity.policies.get($stateParams.policyId);
-        }]
+    params: {
+        'policy': null
     }
 };

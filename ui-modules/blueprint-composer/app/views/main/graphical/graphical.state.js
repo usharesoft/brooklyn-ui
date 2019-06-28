@@ -17,7 +17,7 @@
  * under the License.
  */
 import {graphicalEditEntityState} from './edit/entity/edit.entity.controller';
-import {graphicalEditPolicyState} from './edit/policy/edit.policy.controller';
+import {graphicalEditPoliciesState} from './edit/policies/edit.policies.controller';
 import {graphicalEditEnricherState} from './edit/enricher/edit.enricher.controller';
 import {graphicalEditSensorsState} from './edit/sensors/edit.sensors.controller';
 import {Entity, EntityFamily} from '../../../components/util/model/entity.model';
@@ -66,7 +66,7 @@ function graphicalController($rootScope, $scope, $state, $filter, blueprintServi
             let newPolicy = blueprintService.populateEntityFromApi(new Entity(), selectedType);
             targetEntity.addPolicy(newPolicy);
             blueprintService.refreshEntityMetadata(newPolicy, EntityFamily.POLICY).then(() => {
-                $state.go(graphicalEditPolicyState, {entityId: targetEntity._id, policyId: newPolicy._id});
+                $state.go(graphicalEditPoliciesState, {entityId: targetEntity._id, policy: newPolicy});
             });
         }
         else if (selectedType.supertypes.includes(EntityFamily.ENRICHER.superType)) {

@@ -16,8 +16,13 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<section class="spec-parent">
-    <a ui-sref="main.graphical.edit.entity({entityId: policy.parent._id})">{{(policy.parent | entityName) || 'New application'}}</a>
-</section>
 
-<spec-editor model="policy"></spec-editor>
+<div class="policies-palette">
+
+    <div class="palette-title">
+        <h3>Policies of {{entity.name || entity.miscData.get('typeName')}}</h3>
+    </div>
+
+    <policies-list-editor entity='entity'></policies-list-editor>
+
+</div>

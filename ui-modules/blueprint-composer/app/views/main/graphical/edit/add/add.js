@@ -18,7 +18,7 @@
  */
 import {graphicalEditEntityState} from '../entity/edit.entity.controller';
 import {graphicalEditSpecState} from '../spec/edit.spec.controller';
-import {graphicalEditPolicyState} from '../policy/edit.policy.controller';
+import {graphicalEditPoliciesState} from '../policies/edit.policies.controller';
 import {graphicalEditEnricherState} from '../enricher/edit.enricher.controller';
 import {graphicalEditSensorsState} from '../sensors/edit.sensors.controller';
 import {Entity, EntityFamily} from '../../../../../components/util/model/entity.model';
@@ -125,7 +125,7 @@ export function GraphicalEditAddController($scope, $filter, $state, $stateParams
                 let newPolicy = blueprintService.populateEntityFromApi(new Entity(), type);
                 $scope.entity.addPolicy(newPolicy);
                 blueprintService.refreshEntityMetadata(newPolicy, EntityFamily.POLICY).then(() => {
-                    $state.go(graphicalEditPolicyState, {entityId: $scope.entity._id, policyId: newPolicy._id});
+                    $state.go(graphicalEditPoliciesState, {entityId: $scope.entity._id, policy: newPolicy});
                 });
                 break;
             case EntityFamily.ENRICHER:

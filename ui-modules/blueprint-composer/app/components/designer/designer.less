@@ -138,21 +138,21 @@ designer {
                         y: -42;
                     }
                 }
-                .node-warning, .node-sensors {
+                .node-warning, .node-sensors, .node-policies {
                    cursor: pointer;
                 }
-                .node-sensors-circle {
+                .node-sensors-circle, .node-policies-circle {
                     fill: #fff;
                     stroke: @color-base;
                     stroke-width: 2px;
-                 }
-                 .node-sensors.selected {
-                    .node-sensors-circle {
+                }
+                .node-sensors.selected, .node-policies.selected {
+                    .node-sensors-circle, .node-policies-circle {
                         stroke: @color-selected;
                         stroke-width: 6px;
                         stroke-alignment: inner;
                     }
-                 }
+                }
             }
         }
 
