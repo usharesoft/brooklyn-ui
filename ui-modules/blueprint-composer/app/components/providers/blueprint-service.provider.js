@@ -625,13 +625,13 @@ function BlueprintService($log, $q, $sce, $rootScope, paletteApi, iconGenerator,
                 name: 'sensor-' + Math.random().toString(36).slice(2),
                 period: '5s',
                 targetType: 'string',
-                command: 'date'
+                command: ''
             }
         };
         entity.metadata.get('brooklyn.initializers').push(sensorYaml);
-        createSensorFromSensorYaml(entity, entity.miscData.get('sensors'), sensorYaml);
+        let sensor = createSensorFromSensorYaml(entity, entity.miscData.get('sensors'), sensorYaml);
         $rootScope.$broadcast('UpdateSensorsList', null);
-        return entity;
+        return sensor;
     }
 
     function createSensorFromSensorYaml(entity, sensors, specificSensor) {
@@ -665,6 +665,7 @@ function BlueprintService($log, $q, $sce, $rootScope, paletteApi, iconGenerator,
         }
         sensor.updateMetainfo();
         sensors.push(sensor);
+        return sensor;
     }
 
     /**

@@ -28,8 +28,8 @@
                 popover-class="spec-editor-popover" popover-placement="top-right" popover-append-to-body="true"></i>
         </span>
     </div>
-    <div class="sensor-widget" title="Click to edit sensor" ng-if="sensor.template" ng-click="editionMode($event, sensor)">
-        <span class="sensor-name" ng-if="editionName != sensor.template['brooklyn.config'].name">{{sensor.template['brooklyn.config'].name}}</span>
+    <div class="sensor-widget" ng-if="sensor.template" ng-click="editionMode($event, sensor)">
+        <span class="sensor-name" title="Click to edit sensor" ng-if="editionName != sensor.template['brooklyn.config'].name">{{sensor.template['brooklyn.config'].name}}</span>
         <div ng-if="editionName == sensor.template['brooklyn.config'].name">
             <div class="edit-sensor-button pull-right">
                 <i class="fa fa-fw fa-trash" title="Delete sensor" ng-click="delete($event, sensor)"></i>
@@ -58,7 +58,7 @@
             <span>
                 <label for="sensor-edition-command">Command</label>
                 <textarea id="sensor-edition-command" ng-model="sensor.template['brooklyn.config'].command" ng-change="updateSensorYaml(sensor)" 
-                class="form-control" auto-grow></textarea>
+                class="form-control" auto-grow auto-focus></textarea>
             </span>
         </div>
     </div>

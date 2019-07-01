@@ -267,8 +267,8 @@ export function designerDirective($log, $state, $q, iconGenerator, catalogApi, b
                 $state.go(graphicalEditEntityState, {entityId: target._id});
             }
             else if (draggedItem.supertypes.includes(EntityFamily.SENSORS.superType)) {
-                blueprintService.populateSensor(target, draggedItem);
-                $state.go(graphicalEditSensorsState, {entityId: target._id});
+                let sensor = blueprintService.populateSensor(target, draggedItem);
+                $state.go(graphicalEditSensorsState, {entityId: target._id, sensor: sensor});
             }
             blueprintService.refreshAllRelationships().then(()=> {
                 redrawGraph();

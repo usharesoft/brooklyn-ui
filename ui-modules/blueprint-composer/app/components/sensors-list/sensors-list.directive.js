@@ -23,12 +23,12 @@ const MODULE_NAME = 'brooklyn.components.sensors';
 const TEMPLATE_URL = 'blueprint-composer/component/sensors-list/index.html';
 
 angular.module(MODULE_NAME, [])
-    .directive('sensorsList', sensorsListDirective)
+    .directive('sensorsList', ['$stateParams', sensorsListDirective])
     .run(['$templateCache', templateCache]);
 
 export default MODULE_NAME;
 
-export function sensorsListDirective() {
+export function sensorsListDirective($stateParams) {
     return {
         restrict: 'E',
         templateUrl: function(tElement, tAttrs) {
@@ -39,7 +39,7 @@ export function sensorsListDirective() {
             sensors: '=sensors'
         },
         link: function($scope) {
-            $scope.editionName = null;
+            $scope.editionName = $stateParams.sensor ? $stateParams.sensor.name : null;
             $scope.updateSensorYaml = function(sensor) {
                 $scope.editionName = sensor.template['brooklyn.config'].name;
                 sensor.updateMetainfo();
