@@ -181,11 +181,11 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
         }
 
         function getLineIndent(line) {
-            if (line.handle) {
-                return line.handle.stateAfter.keyCol;
-            } else {
-                return line.stateAfter.keyCol;
+            let i = 0;
+            while (i < line.text.length && line.text[i] == ' ') {
+                i++;
             }
+            return i;
         }
 
         /*
@@ -195,7 +195,7 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
             if (indexFoldBlock+1 == foldBlock.length) {
                 return currentLine;
             } else {
-                return findLineNumberToFold(currentLine+1, $scope.cm.lineInfo(currentLine).handle.stateAfter.keyCol, foldBlock, indexFoldBlock+1);
+                return findLineNumberToFold(currentLine+1, getLineIndent($scope.cm.lineInfo(currentLine)), foldBlock, indexFoldBlock+1);
             }
         }
         
@@ -211,17 +211,19 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
         function findLineNumberToFold(startLine, indentLvlMinimal, foldBlock, indexFoldBlock) {
             let entryInList = -1;
             let i = startLine;
-            while (i < $scope.cm.lineCount() && getLineIndent($scope.cm.lineInfo(i)) > indentLvlMinimal) {
-                if (Number.isInteger(foldBlock[indexFoldBlock])) {
-                    if (isList($scope.cm.lineInfo(i))) {
-                        entryInList++;
-                    }
-                    if (entryInList == foldBlock[indexFoldBlock]) {
-                        return findLineNumberToFoldStep(i, foldBlock, indexFoldBlock);
-                    }
-                } else {
-                    if (extractKey($scope.cm.lineInfo(i).text) == extractKey(foldBlock[indexFoldBlock])) {
-                        return findLineNumberToFoldStep(i, foldBlock, indexFoldBlock);
+            while (i < $scope.cm.lineCount() && ($scope.cm.lineInfo(i).text.length == 0 || getLineIndent($scope.cm.lineInfo(i)) > indentLvlMinimal)) {
+                if (getLineIndent($scope.cm.lineInfo(i)) == foldBlock[indexFoldBlock].indentation) {
+                    if (Number.isInteger(foldBlock[indexFoldBlock].key)) {
+                        if (isList($scope.cm.lineInfo(i))) {
+                            entryInList++;
+                        }
+                        if (entryInList == foldBlock[indexFoldBlock].key) {
+                            return findLineNumberToFoldStep(i, foldBlock, indexFoldBlock);
+                        }
+                    } else {
+                        if (extractKey($scope.cm.lineInfo(i).text) == extractKey(foldBlock[indexFoldBlock].key)) {
+                            return findLineNumberToFoldStep(i, foldBlock, indexFoldBlock);
+                        }
                     }
                 }
                 i++;
@@ -251,11 +253,14 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
             if (currentIndent > 0) {
                 let i = lineNumber;
                 let indexArray = -1;
-                while (currentIndent <= getLineIndent(line.parent.lines[i])) {
-                    if (currentIndent == getLineIndent(line.parent.lines[i]) && isList(line.parent.lines[i])) {
+                while (currentIndent <= getLineIndent($scope.cm.lineInfo(i))) {
+                    if (currentIndent == getLineIndent($scope.cm.lineInfo(i)) && isList($scope.cm.lineInfo(i))) {
                         indexArray++;   
                     }
                     i--;
+                    while ($scope.cm.lineInfo(i).text.length == 0) {
+                        i--;
+                    }
                 }
                 let current;
                 if (isList(line)) {
@@ -263,11 +268,11 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
                 } else {
                     current = extractKey(line.text);
                 }
-                let parents = findParents(line.parent.lines[i], i);
-                parents.push(current);
+                let parents = findParents($scope.cm.lineInfo(i), i);
+                parents.push({indentation: getLineIndent(line), key: current});
                 return parents;
             } else {
-                return [extractKey(line.text)];
+                return [{indentation: getLineIndent(line), key: extractKey(line.text)}];
             }
         }
 
@@ -282,7 +287,7 @@ export function yamlEditorDirective($rootScope, brSnackbar) {
                 let line = $scope.cm.lineInfo(i);
                 if ($scope.cm.isFolded(line) && line.gutterMarkers && line.gutterMarkers['CodeMirror-foldgutter'] 
                     && line.gutterMarkers['CodeMirror-foldgutter'].classList.contains('CodeMirror-foldgutter-folded')) {
-                    let parents = findParents(line.handle.parent.lines[i], i);
+                    let parents = findParents($scope.cm.lineInfo(i), i);
                     value.push(parents);
                 }
                 i++;
