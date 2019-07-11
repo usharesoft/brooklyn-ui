@@ -17,49 +17,36 @@
  * under the License.
  */
 import angular from 'angular';
-import template from './sensors-list.template.html';
+import template from './policies-list-editor.template.html';
+import {graphicalState} from '../../views/main/graphical/graphical.state';
 
-const MODULE_NAME = 'brooklyn.components.sensors';
-const TEMPLATE_URL = 'blueprint-composer/component/sensors-list/index.html';
+const MODULE_NAME = 'brooklyn.components.policies';
+const TEMPLATE_URL = 'blueprint-composer/component/policies-list-editor/index.html';
 
 angular.module(MODULE_NAME, [])
-    .directive('sensorsList', ['$stateParams', sensorsListDirective])
+    .directive('policiesListEditor', ['$state', '$stateParams', policiesListEditorDirective])
     .run(['$templateCache', templateCache]);
 
 export default MODULE_NAME;
 
-export function sensorsListDirective($stateParams) {
+export function policiesListEditorDirective($state, $stateParams) {
     return {
         restrict: 'E',
         templateUrl: function(tElement, tAttrs) {
             return tAttrs.templateUrl || TEMPLATE_URL;
         },
         scope: {
-            title: '=title',
-            sensors: '=sensors'
+            entity: '=entity',
         },
         link: function($scope) {
-            $scope.editionName = $stateParams.sensor ? $stateParams.sensor.name : null;
-            $scope.updateSensorYaml = function(sensor) {
-                $scope.editionName = sensor.template['brooklyn.config'].name;
-                sensor.updateMetainfo();
+            $scope.editedPolicy = $stateParams.policy;
+            $scope.edit = function(policy) {
+                $scope.editedPolicy = policy;
             }
-            $scope.editionMode = function(event, sensor) {
-                event.stopPropagation();
-                if (sensor) {
-                    $scope.editionName = sensor.template['brooklyn.config'].name;
-                } else {
-                    $scope.editionName = null;
-                }
-            }
-            $scope.delete = function(event, sensor) {
-                event.stopPropagation();
-                sensor.deleteSensor();
-                for(let i = 0; i < $scope.sensors.length; i++){ 
-                    if ($scope.sensors[i] === sensor) {
-                        $scope.sensors.splice(i, 1);
-                        break;
-                    }
+            $scope.delete = function(policy) {
+                $scope.entity.removePolicy(policy._id);
+                if ($scope.entity.getPoliciesAsArray().length == 0) {
+                    $state.go(graphicalState.name);
                 }
             }
         }

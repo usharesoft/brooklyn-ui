@@ -17,13 +17,16 @@
   under the License.
 -->
 
-<div class="sensors-palette">
-
-    <div class="palette-title">
-        <h3>Sensors of {{entity.name || entity.miscData.get('typeName')}}</h3>
+<div ng-repeat="policy in entity.getPoliciesAsArray()" class="policy-widget">
+  <div ng-if='editedPolicy !== policy' ng-click="edit(policy)" title='Click to edit the policy' class="policy-overview-container">
+    <img ng-src="{{policy.icon}}" alt="{{policy | entityName}} logo" class="compact-logo"/>
+    <span class="policy-name">{{policy.name || policy.miscData.get('typeName')}}</span>
+  </div>
+  <div class="policy-editor-container" ng-if='editedPolicy === policy'>
+    <div class="edit-policy-button pull-right">
+      <i class="fa fa-fw fa-trash" title="Delete policy" ng-click="delete(policy)"></i>
+      <i class="fa fa-fw fa-times" title="Close editor" ng-click="edit(null)"></i>
     </div>
-
-    <sensors-list sensors="specificSensors" title="'Specific sensor'" ng-if="specificSensors.length > 0"></sensors-list>
-    <sensors-list sensors="genericSensors" title="'Generic sensor'" ng-if="genericSensors.length > 0"></sensors-list>
-
+    <spec-editor model="policy"></spec-editor>
+  </div>
 </div>

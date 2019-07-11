@@ -100,13 +100,34 @@ export function D3Blueprint(container, $scope) {
                     }
                 },
             },
+            policies: {
+                circle: {
+                    r: 17,
+                    cx: -56,
+                    cy: +38,
+                    class: 'node-policies-circle',
+                },
+                icon: {
+                    text: {
+                        x: -56,
+                        y: +37,
+                        'font-family': 'FontAwesome',
+                        'font-size': '20px',
+                        'text-anchor': 'middle',
+                        'dominant-baseline': 'central',
+                        'stroke-width': '0px',
+                        fill: 'black',
+                        class: 'policies-icon'
+                    }
+                },
+            },
             warning: {
                 image: {
                     class: 'node-warning',
                     width: 24,
                     height: 24,
-                    x: -65,
-                    y: 15,
+                    x: 50,
+                    y: -50,
                     'xlink:href': warningIcon
                 }
             },
@@ -319,6 +340,17 @@ export function D3Blueprint(container, $scope) {
         if (d3.event.defaultPrevented) return;
         d3.event.stopPropagation();
         let event = new CustomEvent('click-sensors', {
+            detail: {
+                entity: node.data || node,
+            },
+        });
+        container.dispatchEvent(event);
+    }
+
+    function policiesFunctionClick(node) {
+        if (d3.event.defaultPrevented) return;
+        d3.event.stopPropagation();
+        let event = new CustomEvent('click-policies', {
             detail: {
                 entity: node.data || node,
             },
@@ -713,7 +745,20 @@ export function D3Blueprint(container, $scope) {
         nodeData.select('g.node-sensors').on('click', sensorsFunctionClick)
         appendElements(sensors, _configHolder.nodes.sensors)
         nodeData.select('text.sensors-icon').html('\uf2c9')
-        appendElements(sensors, _configHolder.nodes.sensors.icon)
+        appendElements(sensors, _configHolder.nodes.sensors.icon);
+
+        // Draw policies
+        let policies = nodeGroup.filter(isChildNode)
+            .append('g')
+            .attr('class', 'node-policies')
+            .attr('id', (d)=>(`policies-${d.data._id}`))
+        nodeData.select('g.node-policies').on('click', policiesFunctionClick)
+        appendElements(policies, _configHolder.nodes.policies)
+        nodeData.select('text.policies-icon').html('\uf24e')
+        appendElements(policies, _configHolder.nodes.policies.icon);
+
+        nodeData.select('g.node-policies').filter(d => d.data.getPoliciesAsArray().length == 0).style('opacity', 0);
+        nodeData.select('g.node-policies').filter(d => d.data.getPoliciesAsArray().length > 0).style('opacity', 1);
 
         // Draw warning
         let warning = nodeGroup.append('g')
@@ -1094,7 +1139,7 @@ export function D3Blueprint(container, $scope) {
     }
 
     function getImportantAdjuncts(d) {
-        let adjuncts = d.data.getPoliciesAsArray().concat(d.data.getEnrichersAsArray());
+        let adjuncts = d.data.getEnrichersAsArray();
         return adjuncts.filter((adjunct)=>(adjunct.miscData.has('important') && adjunct.miscData.get('important') === true));
     }
 
@@ -1112,10 +1157,17 @@ export function D3Blueprint(container, $scope) {
         return this;
     }
 
+    function selectPolicies(id) {
+        unselectNode();
+        _svg.select(`#policies-${id}`).classed('selected', true);
+        return this;
+    }
+
     function unselectNode() {
         _svg.selectAll('.entity.selected').classed('selected', false);
         _svg.selectAll('.relation.highlight').classed('highlight', false);
         _svg.selectAll('.node-sensors.selected').classed('selected', false);
+        _svg.selectAll('.node-policies.selected').classed('selected', false);
         return this;
     }
 
@@ -1168,6 +1220,7 @@ export function D3Blueprint(container, $scope) {
         center: center,
         select: selectNode,
         selectSensors: selectSensors,
+        selectPolicies: selectPolicies,
         unselect: unselectNode
     };
 }
